@@ -46,11 +46,17 @@
                                                         <action selector="likeTapped:" destination="z2W-AC-tR4" eventType="touchUpInside" id="gFK-Za-gT0"/>
                                                     </connections>
                                                 </button>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10 октября 2025" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pdu-ye-cDS" userLabel="Date Label">
-                                                    <rect key="frame" x="24" y="167" width="130" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pdu-ye-cDS" userLabel="Date Label">
+                                                    <rect key="frame" x="23.999999999999993" y="172.66666666666666" width="100.33333333333331" height="15.333333333333343"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" name="YPWhite"/>
+                                                    <attributedString key="attributedText">
+                                                        <fragment content="10 октября 2025">
+                                                            <attributes>
+                                                                <color key="NSColor" name="YPWhite"/>
+                                                                <font key="NSFont" size="13" name="YSDisplay-Medium"/>
+                                                            </attributes>
+                                                        </fragment>
+                                                    </attributedString>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -97,6 +103,21 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-118.32061068702289" y="87.323943661971839"/>
+        </scene>
+        <!--Profile-->
+        <scene sceneID="KcB-Oh-40P">
+            <objects>
+                <viewController title="Profile" id="sp8-Oe-gfd" customClass="ProfileViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="gtJ-ug-0t0">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="hoW-Bk-fkT"/>
+                        <color key="backgroundColor" name="YPBlack"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WcO-dc-3FO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="660" y="87"/>
         </scene>
     </scenes>
     <resources>

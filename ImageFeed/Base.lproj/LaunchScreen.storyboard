@@ -16,8 +16,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchScreenVectorIcon" translatesAutoresizingMaskIntoConstraints="NO" id="9ir-M3-pvY">
-                                <rect key="frame" x="157.66666666666666" y="383" width="75" height="78"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash_screen_logo" translatesAutoresizingMaskIntoConstraints="NO" id="9ir-M3-pvY">
+                                <rect key="frame" x="158" y="383" width="75" height="78"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="78" id="C5x-zU-vCp"/>
                                     <constraint firstAttribute="width" constant="75" id="Op3-XZ-JCz"/>
@@ -38,7 +38,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchScreenVectorIcon" width="75" height="78"/>
+        <image name="splash_screen_logo" width="72.666664123535156" height="75.333335876464844"/>
         <namedColor name="YPBlack">
             <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
