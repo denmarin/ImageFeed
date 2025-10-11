@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="sp8-Oe-gfd">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
@@ -111,21 +111,77 @@
                     <view key="view" contentMode="scaleToFill" id="gtJ-ug-0t0">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ProfilePic" translatesAutoresizingMaskIntoConstraints="NO" id="8EX-TP-1Oy" userLabel="Profile Pic">
+                                <rect key="frame" x="16" y="150" width="70" height="70"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="70" id="gSM-HV-FPM"/>
+                                    <constraint firstAttribute="width" secondItem="8EX-TP-1Oy" secondAttribute="height" multiplier="1:1" id="l6A-5H-Au6"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Екатерина Новикова" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RjX-G5-7Q8">
+                                <rect key="frame" x="16" y="228" width="361" height="28"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="23"/>
+                                <color key="textColor" name="YPWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@ekaterina_nov" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CNm-Be-pXl">
+                                <rect key="frame" x="16" y="264" width="361" height="16"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
+                                <color key="textColor" name="YPGray"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hello!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XED-Ok-kYg">
+                                <rect key="frame" x="16" y="288" width="361" height="16"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <color key="textColor" name="YPWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Ag-a7-XzI">
+                                <rect key="frame" x="333" y="163" width="44" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="6Bd-oh-JYW"/>
+                                    <constraint firstAttribute="width" constant="44" id="qbD-4q-MB7"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="Exit"/>
+                            </button>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="hoW-Bk-fkT"/>
                         <color key="backgroundColor" name="YPBlack"/>
+                        <constraints>
+                            <constraint firstItem="CNm-Be-pXl" firstAttribute="trailing" secondItem="RjX-G5-7Q8" secondAttribute="trailing" id="1R8-F2-G4P"/>
+                            <constraint firstItem="RjX-G5-7Q8" firstAttribute="top" secondItem="8EX-TP-1Oy" secondAttribute="bottom" constant="8" id="1kp-zw-eUm"/>
+                            <constraint firstItem="XED-Ok-kYg" firstAttribute="trailing" secondItem="CNm-Be-pXl" secondAttribute="trailing" id="82J-TM-OA3"/>
+                            <constraint firstItem="CNm-Be-pXl" firstAttribute="top" secondItem="RjX-G5-7Q8" secondAttribute="bottom" constant="8" id="BWO-tT-LUo"/>
+                            <constraint firstItem="RjX-G5-7Q8" firstAttribute="trailing" secondItem="hoW-Bk-fkT" secondAttribute="trailing" constant="-16" id="COO-pf-vl4"/>
+                            <constraint firstItem="CNm-Be-pXl" firstAttribute="leading" secondItem="RjX-G5-7Q8" secondAttribute="leading" id="Gqs-Vm-LcP"/>
+                            <constraint firstItem="8EX-TP-1Oy" firstAttribute="top" secondItem="hoW-Bk-fkT" secondAttribute="top" constant="32" id="Il9-gy-QBB"/>
+                            <constraint firstItem="8EX-TP-1Oy" firstAttribute="leading" secondItem="hoW-Bk-fkT" secondAttribute="leading" constant="16" id="Jhj-6l-itL"/>
+                            <constraint firstItem="7Ag-a7-XzI" firstAttribute="trailing" secondItem="hoW-Bk-fkT" secondAttribute="trailing" constant="-16" id="QGy-JJ-466"/>
+                            <constraint firstItem="7Ag-a7-XzI" firstAttribute="centerY" secondItem="8EX-TP-1Oy" secondAttribute="centerY" id="de1-qy-Rq4"/>
+                            <constraint firstItem="XED-Ok-kYg" firstAttribute="top" secondItem="CNm-Be-pXl" secondAttribute="bottom" constant="8" id="qBg-sS-0c7"/>
+                            <constraint firstItem="RjX-G5-7Q8" firstAttribute="leading" secondItem="8EX-TP-1Oy" secondAttribute="leading" id="sdi-lp-Ogg"/>
+                            <constraint firstItem="XED-Ok-kYg" firstAttribute="leading" secondItem="CNm-Be-pXl" secondAttribute="leading" id="toN-lF-lWH"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WcO-dc-3FO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="660" y="87"/>
+            <point key="canvasLocation" x="658.77862595419845" y="86.619718309859152"/>
         </scene>
     </scenes>
     <resources>
         <image name="0" width="1600" height="1059"/>
+        <image name="Exit" width="44" height="44"/>
+        <image name="ProfilePic" width="70" height="70"/>
         <image name="like_button_off" width="42" height="42"/>
         <image name="like_button_on" width="42" height="42"/>
         <namedColor name="YPBlack">
             <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="YPGray">
+            <color red="0.68235294117647061" green="0.68627450980392157" blue="0.70588235294117652" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="YPWhite">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
