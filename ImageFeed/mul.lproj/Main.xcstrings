@@ -13,18 +13,6 @@
         }
       }
     },
-    "CNm-Be-pXl.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"@ekaterina_nov\"; ObjectID = \"CNm-Be-pXl\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "@ekaterina_nov"
-          }
-        }
-      }
-    },
     "cwA-0C-seG.title" : {
       "comment" : "Class = \"UIViewController\"; title = \"Single Image\"; ObjectID = \"cwA-0C-seG\";",
       "extractionState" : "extracted_with_value",
@@ -33,18 +21,6 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Single Image"
-          }
-        }
-      }
-    },
-    "RjX-G5-7Q8.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Екатерина Новикова\"; ObjectID = \"RjX-G5-7Q8\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Екатерина Новикова"
           }
         }
       }
@@ -69,18 +45,6 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Profile"
-          }
-        }
-      }
-    },
-    "XED-Ok-kYg.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Hello!\"; ObjectID = \"XED-Ok-kYg\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Hello!"
           }
         }
       }
