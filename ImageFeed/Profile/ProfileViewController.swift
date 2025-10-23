@@ -26,15 +26,14 @@ class ProfileViewController: UIViewController {
     }
     
     func addProfilePicture() {
-        let profileImage = UIImage(systemName: "person.crop.circle.fill")
+        let profileImage = UIImage(named: "EkaterinaNovProfilePic")
         let imageView = UIImageView(image: profileImage)
         self.imageView = imageView
-        imageView.tintColor = .gray
         imageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(imageView)
         NSLayoutConstraint.activate([
             imageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
             imageView.widthAnchor.constraint(equalToConstant: 70),
             imageView.heightAnchor.constraint(equalToConstant: 70)
         ])
@@ -90,14 +89,15 @@ class ProfileViewController: UIViewController {
     }
     
     func addExitButton () {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "ipad.and.arrow.forward"), for: .normal)
-        button.tintColor = .red
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "Exit"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(button)
         NSLayoutConstraint.activate([
-            button.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            button.centerYAnchor.constraint(equalTo: self.imageView.centerYAnchor)
+            button.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            button.centerYAnchor.constraint(equalTo: self.imageView.centerYAnchor),
+            button.widthAnchor.constraint(equalToConstant: 44),
+            button.heightAnchor.constraint(equalToConstant: 44)
         ])
         
         button.addAction(UIAction { [weak self] _ in
