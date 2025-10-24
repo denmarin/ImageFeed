@@ -47,6 +47,7 @@ class ProfileViewController: UIViewController {
         let text = "Екатерина Новикова"
         nameLabel.text = text
         nameLabel.font = UIFont.systemFont(ofSize: 23, weight: .bold)
+        nameLabel.textColor = .ypWhite
 
         view.addSubview(nameLabel)
         NSLayoutConstraint.activate([
@@ -59,7 +60,7 @@ class ProfileViewController: UIViewController {
     func addNicknameLabel() {
         let nicknameLabel = UILabel()
         nicknameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nicknameLabel.textColor = .ypWhite
+        nicknameLabel.textColor = .ypGray
         
         nicknameLabel.text = "@ekaterina_nov"
         nicknameLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
@@ -75,7 +76,7 @@ class ProfileViewController: UIViewController {
     func addDescriptionLabel() {
         let descriptionLabel = UILabel()
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.textColor = .ypGray
+        descriptionLabel.textColor = .ypWhite
         
         descriptionLabel.text = "Hello, world!"
         descriptionLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
