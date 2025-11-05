@@ -25,6 +25,30 @@
         }
       }
     },
+    "KjX-rU-Ang.configuration.title" : {
+      "comment" : "Class = \"UIButton\"; configuration.title = \"Войти\"; ObjectID = \"KjX-rU-Ang\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Войти"
+          }
+        }
+      }
+    },
+    "KjX-rU-Ang.normalTitle" : {
+      "comment" : "Class = \"UIButton\"; normalTitle = \"Button\"; ObjectID = \"KjX-rU-Ang\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button"
+          }
+        }
+      }
+    },
     "SjK-nu-o5U.title" : {
       "comment" : "Class = \"UITabBarController\"; title = \"Tab Bar\"; ObjectID = \"SjK-nu-o5U\";",
       "extractionState" : "extracted_with_value",
@@ -45,6 +69,30 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Profile"
+          }
+        }
+      }
+    },
+    "wai-hq-sBv.title" : {
+      "comment" : "Class = \"UIViewController\"; title = \"Auth\"; ObjectID = \"wai-hq-sBv\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Auth"
+          }
+        }
+      }
+    },
+    "xZW-qF-ELm.title" : {
+      "comment" : "Class = \"UIViewController\"; title = \"WebView\"; ObjectID = \"xZW-qF-ELm\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "WebView"
           }
         }
       }
