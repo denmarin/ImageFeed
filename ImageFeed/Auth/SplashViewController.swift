@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SplashViewController: UIViewController {
+final class SplashViewController: UIViewController {
     private let storage = OAuth2TokenStorage()
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
 
@@ -63,3 +63,4 @@ extension SplashViewController: AuthViewControllerDelegate {
             await switchToTabBarController()
     }
 }
+

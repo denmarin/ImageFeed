@@ -7,7 +7,10 @@
 
 import Foundation
 
-class OAuth2Service {
+final class OAuth2Service {
+
+    static let shared = OAuth2Service()
+    private init() {}
 
     private let tokenStorage = OAuth2TokenStorage()
     private let tokenURLString = Constants.defaultBaseURL
@@ -22,6 +25,7 @@ class OAuth2Service {
         let refreshToken: String?
         let expiresIn: Int?
 
+        /*
         enum CodingKeys: String, CodingKey {
             case accessToken = "access_token"
             case tokenType = "token_type"
@@ -29,6 +33,7 @@ class OAuth2Service {
             case refreshToken = "refresh_token"
             case expiresIn = "expires_in"
         }
+        */
     }
     
      private func makeOAuthTokenRequest(code: String) -> URLRequest? {
@@ -72,10 +77,10 @@ class OAuth2Service {
             throw error
         }
 
-        let decoder = JSONDecoder()
+        let snakeCaseDecoder = JSONDecoder.snakeCase()
         let model: OAuthTokenResponseBody
         do {
-            model = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+            model = try snakeCaseDecoder.decode(OAuthTokenResponseBody.self, from: data)
         } catch {
             print("Decoding OAuthTokenResponseBody failed: \(error)")
             throw error

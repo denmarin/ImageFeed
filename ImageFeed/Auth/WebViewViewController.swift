@@ -17,7 +17,7 @@ protocol WebViewViewControllerDelegate: AnyObject {
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
 
-class WebViewViewController: UIViewController {
+final class WebViewViewController: UIViewController {
     
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet private var progressView: UIProgressView!
