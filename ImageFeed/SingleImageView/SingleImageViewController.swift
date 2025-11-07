@@ -81,7 +81,7 @@ extension SingleImageViewController: UIScrollViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         updateInsetsToCenterImage()
     }
-
+    
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
         updateInsetsToCenterImage()
     }

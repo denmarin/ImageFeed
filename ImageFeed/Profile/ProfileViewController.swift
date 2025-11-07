@@ -12,7 +12,7 @@ final class ProfileViewController: UIViewController {
     private var nicknameLabel: UILabel?
     private var descriptionLabel: UILabel?
     private var imageView: UIImageView!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
@@ -26,7 +26,7 @@ final class ProfileViewController: UIViewController {
     }
     
     func addProfilePicture() {
-        let profileImage = UIImage(named: "EkaterinaNovProfilePic")
+        let profileImage = UIImage(resource: .ekaterinaNovProfilePic)
         let imageView = UIImageView(image: profileImage)
         self.imageView = imageView
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -43,12 +43,12 @@ final class ProfileViewController: UIViewController {
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.textColor = .ypWhite
-
+        
         let text = "Екатерина Новикова"
         nameLabel.text = text
         nameLabel.font = UIFont.systemFont(ofSize: 23, weight: .bold)
         nameLabel.textColor = .ypWhite
-
+        
         view.addSubview(nameLabel)
         NSLayoutConstraint.activate([
             nameLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -72,7 +72,7 @@ final class ProfileViewController: UIViewController {
         ])
         self.nicknameLabel = nicknameLabel
     }
-
+    
     func addDescriptionLabel() {
         let descriptionLabel = UILabel()
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
