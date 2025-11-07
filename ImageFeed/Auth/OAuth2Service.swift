@@ -32,7 +32,10 @@ class OAuth2Service {
     }
     
      private func makeOAuthTokenRequest(code: String) -> URLRequest? {
-         guard let url = URL(string: "https://unsplash.com/oauth/token") else { return nil }
+         guard let url = URL(string: "https://unsplash.com/oauth/token") else {
+             print("Failed to create URL for OAuth token endpoint")
+             return nil
+         }
          var request = URLRequest(url: url)
          request.httpMethod = "POST"
          request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -56,7 +59,7 @@ class OAuth2Service {
     func fetchOAuthToken(code: String) async throws -> String {
         
         guard let request = makeOAuthTokenRequest(code: code) else {
-            
+            print("Failed to build URLRequest for OAuth token request")
             let error = NSError(domain: "OAuth2Service", code: -1, userInfo: [NSLocalizedDescriptionKey: "Не удалось собрать URLRequest"])
             throw error
         }
@@ -70,10 +73,16 @@ class OAuth2Service {
         }
 
         let decoder = JSONDecoder()
-        let model = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+        let model: OAuthTokenResponseBody
+        do {
+            model = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+        } catch {
+            print("Decoding OAuthTokenResponseBody failed: \(error)")
+            throw error
+        }
         
-        tokenStorage.token = "Bearer \(model.accessToken)"
-        return model.accessToken
+        tokenStorage.token = "\(model.accessToken)"
+        return "Bearer \(model.accessToken)"
     }
     
     /*
@@ -145,3 +154,4 @@ class OAuth2Service {
     }
     */
 }
+

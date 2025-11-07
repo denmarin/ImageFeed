@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "A1I-oa-OSJ.title" : {
+      "comment" : "Class = \"UINavigationController\"; title = \"Navigation\"; ObjectID = \"A1I-oa-OSJ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Navigation"
+          }
+        }
+      }
+    },
     "BYZ-38-t0r.title" : {
       "comment" : "Class = \"UIViewController\"; title = \"ImageList\"; ObjectID = \"BYZ-38-t0r\";",
       "extractionState" : "extracted_with_value",
@@ -45,6 +57,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Button"
+          }
+        }
+      }
+    },
+    "nMG-mL-kid.title" : {
+      "comment" : "Class = \"UIViewController\"; title = \"SplashView\"; ObjectID = \"nMG-mL-kid\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "SplashView"
           }
         }
       }

@@ -7,9 +7,15 @@
 
 import UIKit
 
+protocol AuthViewControllerDelegate: AnyObject {
+    func didAuthenticate(_ vc: AuthViewController) async
+}
+
 final class AuthViewController: UIViewController {
+    weak var delegate: AuthViewControllerDelegate?
     private let showWebViewSegueIdentifier = "ShowWebView"
     private let oauthService = OAuth2Service()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,9 +52,8 @@ extension AuthViewController: WebViewViewControllerDelegate {
             do {
                 let token = try await self.oauthService.fetchOAuthToken(code: code)
                 print("Received token: \(token)")
-                await MainActor.run {
-                    vc.dismiss(animated: true)
-                }
+                await MainActor.run { vc.dismiss(animated: true) }
+                await self.delegate?.didAuthenticate(self)
             } catch {
                 print("Failed to fetch token: \(error)")
             }

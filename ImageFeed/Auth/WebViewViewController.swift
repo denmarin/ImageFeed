@@ -74,6 +74,7 @@ class WebViewViewController: UIViewController {
     
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
+            print("Failed to create URLComponents from auth URL string")
             return
         }
         
@@ -123,3 +124,4 @@ extension WebViewViewController: WKNavigationDelegate {
         }
     }
 }
+

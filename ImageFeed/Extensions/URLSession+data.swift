@@ -21,9 +21,7 @@ extension URLSession {
         completion: @escaping (Result<Data, Error>) -> Void
     ) -> URLSessionTask {
         let fulfillCompletionOnTheMainThread: (Result<Data, Error>) -> Void = { result in
-            DispatchQueue.main.async {
-                completion(result)
-            }
+            Task { await MainActor.run { completion(result) } }
         }
         
         let task = dataTask(with: request, completionHandler: { data, response, error in
