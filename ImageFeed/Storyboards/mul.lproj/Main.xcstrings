@@ -1,0 +1,126 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "A1I-oa-OSJ.title" : {
+      "comment" : "Class = \"UINavigationController\"; title = \"Navigation\"; ObjectID = \"A1I-oa-OSJ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Navigation"
+          }
+        }
+      }
+    },
+    "BYZ-38-t0r.title" : {
+      "comment" : "Class = \"UIViewController\"; title = \"ImageList\"; ObjectID = \"BYZ-38-t0r\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "ImageList"
+          }
+        }
+      }
+    },
+    "cwA-0C-seG.title" : {
+      "comment" : "Class = \"UIViewController\"; title = \"Single Image\"; ObjectID = \"cwA-0C-seG\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Single Image"
+          }
+        }
+      }
+    },
+    "KjX-rU-Ang.configuration.title" : {
+      "comment" : "Class = \"UIButton\"; configuration.title = \"Войти\"; ObjectID = \"KjX-rU-Ang\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Войти"
+          }
+        }
+      }
+    },
+    "KjX-rU-Ang.normalTitle" : {
+      "comment" : "Class = \"UIButton\"; normalTitle = \"Button\"; ObjectID = \"KjX-rU-Ang\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button"
+          }
+        }
+      }
+    },
+    "nMG-mL-kid.title" : {
+      "comment" : "Class = \"UIViewController\"; title = \"SplashView\"; ObjectID = \"nMG-mL-kid\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "SplashView"
+          }
+        }
+      }
+    },
+    "SjK-nu-o5U.title" : {
+      "comment" : "Class = \"UITabBarController\"; title = \"Tab Bar\"; ObjectID = \"SjK-nu-o5U\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Tab Bar"
+          }
+        }
+      }
+    },
+    "sp8-Oe-gfd.title" : {
+      "comment" : "Class = \"UIViewController\"; title = \"Profile\"; ObjectID = \"sp8-Oe-gfd\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Profile"
+          }
+        }
+      }
+    },
+    "wai-hq-sBv.title" : {
+      "comment" : "Class = \"UIViewController\"; title = \"Auth\"; ObjectID = \"wai-hq-sBv\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Auth"
+          }
+        }
+      }
+    },
+    "xZW-qF-ELm.title" : {
+      "comment" : "Class = \"UIViewController\"; title = \"WebView\"; ObjectID = \"xZW-qF-ELm\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "WebView"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}
