@@ -7,6 +7,29 @@
 
 import Foundation
 
+enum OAuthError: LocalizedError {
+    case invalidRequest
+    case nonHTTPResponse
+    case badStatus(code: Int, body: Data?)
+    case decodingFailed(underlying: Error)
+    case transport(underlying: Error)
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidRequest:
+            return "Не удалось собрать запрос авторизации."
+        case .nonHTTPResponse:
+            return "Некорректный ответ сервера."
+        case .badStatus(let code, _):
+            return "Сервер вернул статус \(code)."
+        case .decodingFailed:
+            return "Не удалось обработать ответ сервера."
+        case .transport:
+            return "Проблема сети или соединения."
+        }
+    }
+}
+
 final class OAuth2Service {
     
     static let shared = OAuth2Service()
@@ -24,16 +47,6 @@ final class OAuth2Service {
         let scope: String?
         let refreshToken: String?
         let expiresIn: Int?
-        
-        /*
-         enum CodingKeys: String, CodingKey {
-         case accessToken = "access_token"
-         case tokenType = "token_type"
-         case scope
-         case refreshToken = "refresh_token"
-         case expiresIn = "expires_in"
-         }
-         */
     }
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
@@ -59,34 +72,37 @@ final class OAuth2Service {
         request.httpBody = components.percentEncodedQuery?.data(using: .utf8)
         return request
     }
-    
-    
+
     func fetchOAuthToken(code: String) async throws -> String {
-        
         guard let request = makeOAuthTokenRequest(code: code) else {
-            print("Failed to build URLRequest for OAuth token request")
-            let error = NSError(domain: "OAuth2Service", code: -1, userInfo: [NSLocalizedDescriptionKey: "Не удалось собрать URLRequest"])
-            throw error
+            throw OAuthError.invalidRequest
         }
-        
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
-            let error = NSError(domain: "OAuth2Service", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Сервер вернул статус: \(httpResponse.statusCode)"])
-            throw error
+
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch {
+            throw OAuthError.transport(underlying: error)
         }
-        
-        let snakeCaseDecoder = JSONDecoder.snakeCase()
+
+        guard let http = response as? HTTPURLResponse else {
+            throw OAuthError.nonHTTPResponse
+        }
+
+        guard (200...299).contains(http.statusCode) else {
+            throw OAuthError.badStatus(code: http.statusCode, body: data)
+        }
+
+        let decoder = JSONDecoder.snakeCase()
         let model: OAuthTokenResponseBody
         do {
-            model = try snakeCaseDecoder.decode(OAuthTokenResponseBody.self, from: data)
+            model = try decoder.decode(OAuthTokenResponseBody.self, from: data)
         } catch {
-            print("Decoding OAuthTokenResponseBody failed: \(error)")
-            throw error
+            throw OAuthError.decodingFailed(underlying: error)
         }
-        
-        tokenStorage.token = "\(model.accessToken)"
+
+        tokenStorage.token = model.accessToken
         return "Bearer \(model.accessToken)"
     }
 }
