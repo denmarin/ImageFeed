@@ -30,7 +30,7 @@ enum OAuthError: LocalizedError {
     }
 }
 
-final class OAuth2Service {
+actor OAuth2Service {
     
     static let shared = OAuth2Service()
     private init() {}
@@ -48,6 +48,8 @@ final class OAuth2Service {
         let refreshToken: String?
         let expiresIn: Int?
     }
+    
+    private var inFlight: (code: String, task: Task<String, Error>)?
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard let url = URL(string: "https://unsplash.com/oauth/token") else {
@@ -72,38 +74,59 @@ final class OAuth2Service {
         request.httpBody = components.percentEncodedQuery?.data(using: .utf8)
         return request
     }
-
+    
     func fetchOAuthToken(code: String) async throws -> String {
-        guard let request = makeOAuthTokenRequest(code: code) else {
-            throw OAuthError.invalidRequest
+        if let current = inFlight {
+            if current.code == code {
+                return try await current.task.value
+            } else {
+                current.task.cancel()
+                inFlight = nil
+            }
         }
-
-        let data: Data
-        let response: URLResponse
+        
+        let task = Task<String, Error> {
+            guard let request = makeOAuthTokenRequest(code: code) else {
+                throw OAuthError.invalidRequest
+            }
+            
+            let (data, response): (Data, URLResponse)
+            do {
+                (data, response) = try await URLSession.shared.data(for: request)
+            } catch {
+                throw OAuthError.transport(underlying: error)
+            }
+            
+            guard let http = response as? HTTPURLResponse else {
+                throw OAuthError.nonHTTPResponse
+            }
+            
+            guard (200...299).contains(http.statusCode) else {
+                throw OAuthError.badStatus(code: http.statusCode, body: data)
+            }
+            
+            let decoder = JSONDecoder.snakeCase()
+            let model: OAuthTokenResponseBody
+            do {
+                model = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+            } catch {
+                throw OAuthError.decodingFailed(underlying: error)
+            }
+            
+            await tokenStorage.set(model.accessToken)
+            return "Bearer \(model.accessToken)"
+        }
+        
+        inFlight = (code, task)
+        
         do {
-            (data, response) = try await URLSession.shared.data(for: request)
+            let result = try await task.value
+            inFlight = nil
+            return result
         } catch {
-            throw OAuthError.transport(underlying: error)
+            inFlight = nil
+            throw error
         }
-
-        guard let http = response as? HTTPURLResponse else {
-            throw OAuthError.nonHTTPResponse
-        }
-
-        guard (200...299).contains(http.statusCode) else {
-            throw OAuthError.badStatus(code: http.statusCode, body: data)
-        }
-
-        let decoder = JSONDecoder.snakeCase()
-        let model: OAuthTokenResponseBody
-        do {
-            model = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-        } catch {
-            throw OAuthError.decodingFailed(underlying: error)
-        }
-
-        tokenStorage.token = model.accessToken
-        return "Bearer \(model.accessToken)"
     }
 }
 

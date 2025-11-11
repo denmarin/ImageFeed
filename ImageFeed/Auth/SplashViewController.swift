@@ -14,12 +14,14 @@ final class SplashViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if storage.token != nil {
-            Task {
-                await switchToTabBarController()
+        Task { [weak self] in
+            guard let self else { return }
+            let token = await self.storage.get()
+            if token != nil {
+                await self.switchToTabBarController()
+            } else {
+                self.performSegue(withIdentifier: self.showAuthenticationScreenSegueIdentifier, sender: nil)
             }
-        } else {
-            performSegue(withIdentifier: "\(showAuthenticationScreenSegueIdentifier)", sender: nil)
         }
     }
     

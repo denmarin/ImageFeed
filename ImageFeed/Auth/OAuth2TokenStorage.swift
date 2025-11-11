@@ -1,6 +1,6 @@
 import Foundation
 
-final class OAuth2TokenStorage {
+actor OAuth2TokenStorage {
     static let shared = OAuth2TokenStorage()
     private let tokenKey = "OAuthBearerToken"
     private let defaults: UserDefaults
