@@ -51,7 +51,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
         Task { [weak self, weak vc] in
             guard let self = self, let vc = vc else { return }
             do {
-                ProgressHUD.animate()
+                UIBlockingProgressHUD.show()
                 let token = try await self.oauthService.fetchOAuthToken(code: code)
                 print("Received token: \(token)")
                 await MainActor.run { vc.dismiss(animated: true) }
@@ -59,7 +59,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
             } catch {
                 print("Failed to fetch token: \(error)")
             }
-            ProgressHUD.dismiss()
+            UIBlockingProgressHUD.dismiss()
         }
     }
     
