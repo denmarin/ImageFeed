@@ -12,6 +12,7 @@ final class ProfileViewController: UIViewController {
     private var nicknameLabel: UILabel?
     private var descriptionLabel: UILabel?
     private var imageView: UIImageView!
+    private let profileService = ProfileService()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,15 +22,29 @@ final class ProfileViewController: UIViewController {
         addNameLabel()
         addNicknameLabel()
         addDescriptionLabel()
-        addExitButton()
         
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let token = await OAuth2TokenStorage.shared.token
+                let profile = try await self.profileService.fetchProfile(token ?? "")
+                await MainActor.run {
+                    self.updateUI(with: profile)
+                }
+            } catch {
+                print("Failed to fetch profile: \(error)")
+            }
+        }
+        addExitButton()
     }
     
     func addProfilePicture() {
-        let profileImage = UIImage(resource: .ekaterinaNovProfilePic)
-        let imageView = UIImageView(image: profileImage)
+        let imageView = UIImageView(image: UIImage(resource: .profilePic))
         self.imageView = imageView
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 35
         view.addSubview(imageView)
         NSLayoutConstraint.activate([
             imageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
@@ -43,12 +58,7 @@ final class ProfileViewController: UIViewController {
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.textColor = .ypWhite
-        
-        let text = "Екатерина Новикова"
-        nameLabel.text = text
         nameLabel.font = UIFont.systemFont(ofSize: 23, weight: .bold)
-        nameLabel.textColor = .ypWhite
-        
         view.addSubview(nameLabel)
         NSLayoutConstraint.activate([
             nameLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -61,10 +71,7 @@ final class ProfileViewController: UIViewController {
         let nicknameLabel = UILabel()
         nicknameLabel.translatesAutoresizingMaskIntoConstraints = false
         nicknameLabel.textColor = .ypGray
-        
-        nicknameLabel.text = "@ekaterina_nov"
         nicknameLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        
         view.addSubview(nicknameLabel)
         NSLayoutConstraint.activate([
             nicknameLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -77,10 +84,7 @@ final class ProfileViewController: UIViewController {
         let descriptionLabel = UILabel()
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.textColor = .ypWhite
-        
-        descriptionLabel.text = "Hello, world!"
         descriptionLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        
         view.addSubview(descriptionLabel)
         NSLayoutConstraint.activate([
             descriptionLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -117,5 +121,11 @@ final class ProfileViewController: UIViewController {
             }
         }, for: .touchUpInside)
     }
+    
+    private func updateUI(with profile: ProfileService.Profile) {
+        nameLabel?.text = profile.name
+        nicknameLabel?.text = profile.loginName
+        descriptionLabel?.text = profile.bio
+        imageView.image = profile.profileImage
+    }
 }
-
