@@ -12,7 +12,7 @@ final class ProfileViewController: UIViewController {
     private var nicknameLabel: UILabel?
     private var descriptionLabel: UILabel?
     private var imageView: UIImageView!
-    private let profileService = ProfileService()
+    private let profileService = ProfileService.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,18 +23,10 @@ final class ProfileViewController: UIViewController {
         addNicknameLabel()
         addDescriptionLabel()
         
-        Task { [weak self] in
-            guard let self else { return }
-            do {
-                let token = await OAuth2TokenStorage.shared.token
-                let profile = try await self.profileService.fetchProfile(token ?? "")
-                await MainActor.run {
-                    self.updateUI(with: profile)
-                }
-            } catch {
-                print("Failed to fetch profile: \(error)")
-            }
+        if let profile = profileService.profile {
+            self.updateProfileDetails(profile: profile)
         }
+        
         addExitButton()
     }
     
@@ -122,7 +114,7 @@ final class ProfileViewController: UIViewController {
         }, for: .touchUpInside)
     }
     
-    private func updateUI(with profile: ProfileService.Profile) {
+    private func updateProfileDetails(profile: ProfileService.Profile) {
         nameLabel?.text = profile.name
         nicknameLabel?.text = profile.loginName
         descriptionLabel?.text = profile.bio

@@ -18,6 +18,8 @@ struct ProfileResult: Codable {
 }
 
 final class ProfileService {
+    static let shared = ProfileService()
+    
     // MARK: - UI Model
     struct Profile {
         var username: String
@@ -29,13 +31,15 @@ final class ProfileService {
         var name: String { "\(firstName) \(lastName)" }
         var loginName: String { "@\(username)" }
     }
+    
+    private(set) var profile: Profile?
 
     // MARK: - API work
     enum ProfileServiceError: Error { case invalidURL, decodingFailed, requestInFlight }
     
     private let session: URLSession
 
-    init(session: URLSession = .shared) {
+    private init(session: URLSession = .shared) {
         self.session = session
     }
 
@@ -54,22 +58,7 @@ final class ProfileService {
         let snakeCaseDecoder = JSONDecoder.snakeCase()
         let result = try snakeCaseDecoder.decode(ProfileResult.self, from: data)
         
-        let avatarURLString = result.profileImage ?? ""
-        let avatarImage: UIImage
-        if let url = URL(string: avatarURLString), !avatarURLString.isEmpty {
-            do {
-                let (imageData, _) = try await session.data(from: url)
-                if let img = UIImage(data: imageData) {
-                    avatarImage = img
-                } else {
-                    avatarImage = UIImage(resource: .profilePic)
-                }
-            } catch {
-                avatarImage = UIImage(resource: .profilePic)
-            }
-        } else {
-            avatarImage = UIImage(resource: .profilePic)
-        }
+        let avatarImage: UIImage = UIImage(resource: .profilePic) // placeholder instead of fetching from network
 
         let profile = Profile(
             username: result.username ?? "",
@@ -78,6 +67,7 @@ final class ProfileService {
             bio: result.bio ?? "",
             profileImage: avatarImage
         )
+        self.profile = profile
         return profile
     }
 }
