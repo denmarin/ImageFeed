@@ -45,7 +45,10 @@ final class SplashViewController: UIViewController {
     
     private func fetchProfile(_ token: String) async {
         do {
-            _ = try await profileService.fetchProfile(token)
+            let profile = try await profileService.fetchProfile(token)
+            Task {
+                try? await ProfileImageService.shared.fetchProfileImageURL(username: profile.username)
+            }
         } catch {
             print("Failed to fetch profile: \(error)")
         }
@@ -79,4 +82,3 @@ extension SplashViewController: AuthViewControllerDelegate {
         await switchToTabBarController()
     }
 }
-
