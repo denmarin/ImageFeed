@@ -20,6 +20,13 @@ private enum ProfileImageError: LocalizedError {
 }
 
 final class ProfileImageService {
+    
+    static let shared = ProfileImageService()
+    private init() {}
+    
+    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
+    private(set) var avatarURL: String?
+    
     // Ответ API
     struct UserResult: Codable {
         let profileImage: ProfileImage
@@ -27,11 +34,6 @@ final class ProfileImageService {
     }
 
     struct ProfileImage: Codable { let small: String }
-
-    static let shared = ProfileImageService()
-    private init() {}
-
-    private(set) var avatarURL: String?
 
     @discardableResult
     func fetchProfileImageURL(username: String) async throws -> String {
@@ -47,6 +49,11 @@ final class ProfileImageService {
         let result = try decoder.decode(UserResult.self, from: data)
         let url = result.profileImage.small
         self.avatarURL = url
+        NotificationCenter.default
+            .post(
+                name: ProfileImageService.didChangeNotification,
+                object: self,
+                userInfo: ["URL": url])
         return url
     }
 

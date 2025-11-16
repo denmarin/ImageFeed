@@ -8,6 +8,7 @@
 import UIKit
 
 final class ProfileViewController: UIViewController {
+    private var profileImageServiceObserver: NSObjectProtocol?
     private var nameLabel: UILabel?
     private var nicknameLabel: UILabel?
     private var descriptionLabel: UILabel?
@@ -28,6 +29,17 @@ final class ProfileViewController: UIViewController {
         }
         
         addExitButton()
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
     }
     
     func addProfilePicture() {
@@ -119,5 +131,13 @@ final class ProfileViewController: UIViewController {
         nicknameLabel?.text = profile.loginName
         descriptionLabel?.text = profile.bio
         imageView.image = profile.profileImage
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
     }
 }
