@@ -38,23 +38,20 @@ final class ProfileImageService {
     @discardableResult
     func fetchProfileImageURL(username: String) async throws -> String {
         let request = try await makeRequest(username: username)
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
-            let status = (response as? HTTPURLResponse)?.statusCode ?? -1
-            throw ProfileImageError.badStatus(status)
+        do {
+            let result: UserResult = try await URLSession.shared.objectTask(for: request)
+            let url = result.profileImage.small
+            self.avatarURL = url
+            NotificationCenter.default
+                .post(
+                    name: ProfileImageService.didChangeNotification,
+                    object: self,
+                    userInfo: ["URL": url])
+            return url
+        } catch {
+            print("[ProfileImageService.fetchProfileImageURL]: \(error.localizedDescription)")
+            throw error
         }
-
-        let decoder = JSONDecoder()
-        let result = try decoder.decode(UserResult.self, from: data)
-        let url = result.profileImage.small
-        self.avatarURL = url
-        NotificationCenter.default
-            .post(
-                name: ProfileImageService.didChangeNotification,
-                object: self,
-                userInfo: ["URL": url])
-        return url
     }
 
     private func makeRequest(username: String) async throws -> URLRequest {
@@ -74,4 +71,3 @@ final class ProfileImageService {
         return request
     }
 }
-

@@ -90,27 +90,27 @@ actor OAuth2Service {
                 throw OAuthError.invalidRequest
             }
             
-            let (data, response): (Data, URLResponse)
-            do {
-                (data, response) = try await URLSession.shared.data(for: request)
-            } catch {
-                throw OAuthError.transport(underlying: error)
-            }
-            
-            guard let http = response as? HTTPURLResponse else {
-                throw OAuthError.nonHTTPResponse
-            }
-            
-            guard (200...299).contains(http.statusCode) else {
-                throw OAuthError.badStatus(code: http.statusCode, body: data)
-            }
-            
-            let decoder = JSONDecoder.snakeCase()
             let model: OAuthTokenResponseBody
             do {
-                model = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+                model = try await URLSession.shared.objectTask(for: request, decoder: .snakeCase())
+            } catch let error as NetworkError {
+                switch error {
+                case .httpStatusCode(let code):
+                    print("[OAuth2Service.fetchOAuthToken]: bad status \(code)")
+                    throw OAuthError.badStatus(code: code, body: nil)
+                case .decodingError(let underlying):
+                    print("[OAuth2Service.fetchOAuthToken]: decoding error \(underlying.localizedDescription)")
+                    throw OAuthError.decodingFailed(underlying: underlying)
+                case .urlRequestError(let underlying):
+                    print("[OAuth2Service.fetchOAuthToken]: transport error \(underlying.localizedDescription)")
+                    throw OAuthError.transport(underlying: underlying)
+                case .urlSessionError, .invalidRequest:
+                    print("[OAuth2Service.fetchOAuthToken]: non-HTTP response")
+                    throw OAuthError.nonHTTPResponse
+                }
             } catch {
-                throw OAuthError.decodingFailed(underlying: error)
+                print("[OAuth2Service.fetchOAuthToken]: unexpected error \(error.localizedDescription)")
+                throw OAuthError.transport(underlying: error)
             }
             
             await tokenStorage.set(model.accessToken)
@@ -125,6 +125,7 @@ actor OAuth2Service {
             return result
         } catch {
             inFlight = nil
+            print("[OAuth2Service.fetchOAuthToken]: \(error.localizedDescription)")
             throw error
         }
     }

@@ -14,11 +14,18 @@ struct ProfileResult: Codable {
     var firstName: String?
     var lastName: String?
     var bio: String?
-    var profileImage: String?
+    var profileImage: ProfileImage?
+
+    struct ProfileImage: Codable {
+        let small: String?
+        let medium: String?
+        let large: String?
+    }
 }
 
 final class ProfileService {
     static let shared = ProfileService()
+    static let didChangeNotification = Notification.Name("ProfileServiceDidChange")
     
     // MARK: - UI Model
     struct Profile {
@@ -52,23 +59,29 @@ final class ProfileService {
     }
 
     func fetchProfile(_ token: String) async throws -> Profile {
-        let request = try makeProfileRequest(token: token)
-        let (data, _) = try await session.data(for: request)
+        do {
+            let request = try makeProfileRequest(token: token)
+            let result: ProfileResult = try await session.objectTask(for: request, decoder: .snakeCase())
+            print("[ProfileService] Fetched profile result: username=\(result.username ?? "nil"), firstName=\(result.firstName ?? "nil"), lastName=\(result.lastName ?? "nil"), bio=\(result.bio ?? "nil")")
 
-        let snakeCaseDecoder = JSONDecoder.snakeCase()
-        let result = try snakeCaseDecoder.decode(ProfileResult.self, from: data)
-        
-        let avatarImage: UIImage = UIImage(resource: .profilePic) // placeholder instead of fetching from network
+            let avatarImage: UIImage = UIImage(resource: .profilePic)
 
-        let profile = Profile(
-            username: result.username ?? "",
-            firstName: result.firstName ?? "",
-            lastName: result.lastName ?? "",
-            bio: result.bio ?? "",
-            profileImage: avatarImage
-        )
-        self.profile = profile
-        return profile
+            let profile = Profile(
+                username: result.username ?? "",
+                firstName: result.firstName ?? "",
+                lastName: result.lastName ?? "",
+                bio: result.bio ?? "",
+                profileImage: avatarImage
+            )
+            self.profile = profile
+            await MainActor.run {
+                NotificationCenter.default.post(name: ProfileService.didChangeNotification, object: self)
+            }
+            return profile
+        } catch {
+            print("[ProfileService.fetchProfile]: \(error.localizedDescription)")
+            throw error
+        }
     }
 }
 

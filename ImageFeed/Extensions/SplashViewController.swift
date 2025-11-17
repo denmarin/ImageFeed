@@ -30,7 +30,9 @@ final class SplashViewController: UIViewController {
     private func switchToTabBarController() async {
         await MainActor.run {
             guard
-                let windowScene = view.window?.windowScene,
+                let windowScene = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .first(where: { $0.activationState == .foregroundActive }),
                 let window = windowScene.windows.first
             else {
                 assertionFailure("Invalid window configuration")
@@ -82,3 +84,4 @@ extension SplashViewController: AuthViewControllerDelegate {
         await switchToTabBarController()
     }
 }
+

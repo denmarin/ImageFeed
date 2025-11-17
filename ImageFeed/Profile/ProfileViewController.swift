@@ -39,7 +39,20 @@ final class ProfileViewController: UIViewController {
                 guard let self = self else { return }
                 self.updateAvatar()
             }
+        
+        NotificationCenter.default.addObserver(forName: ProfileService.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
+            guard let self = self, let profile = self.profileService.profile else { return }
+            self.updateProfileDetails(profile: profile)
+        }
+        
         updateAvatar()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let profile = profileService.profile {
+            updateProfileDetails(profile: profile)
+        }
     }
     
     func addProfilePicture() {
@@ -63,6 +76,7 @@ final class ProfileViewController: UIViewController {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.textColor = .ypWhite
         nameLabel.font = UIFont.systemFont(ofSize: 23, weight: .bold)
+        nameLabel.text = "No name"
         view.addSubview(nameLabel)
         NSLayoutConstraint.activate([
             nameLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -76,6 +90,7 @@ final class ProfileViewController: UIViewController {
         nicknameLabel.translatesAutoresizingMaskIntoConstraints = false
         nicknameLabel.textColor = .ypGray
         nicknameLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        nicknameLabel.text = "@unknown"
         view.addSubview(nicknameLabel)
         NSLayoutConstraint.activate([
             nicknameLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -89,6 +104,7 @@ final class ProfileViewController: UIViewController {
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.textColor = .ypWhite
         descriptionLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        descriptionLabel.text = "—"
         view.addSubview(descriptionLabel)
         NSLayoutConstraint.activate([
             descriptionLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -127,9 +143,14 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateProfileDetails(profile: ProfileService.Profile) {
-        nameLabel?.text = profile.name
-        nicknameLabel?.text = profile.loginName
-        descriptionLabel?.text = profile.bio
+        print("[ProfileViewController] updateProfileDetails called with name=\(profile.name), login=\(profile.loginName)")
+        let name = profile.name
+        let login = profile.loginName
+        let bio = profile.bio
+
+        nameLabel?.text = name.isEmpty ? "No name" : name
+        nicknameLabel?.text = login.isEmpty ? "@unknown" : login
+        descriptionLabel?.text = bio.isEmpty ? "—" : bio
         imageView.image = profile.profileImage
     }
     
