@@ -30,17 +30,20 @@ final class ProfileImageService {
     // Ответ API
     struct UserResult: Codable {
         let profileImage: ProfileImage
-        enum CodingKeys: String, CodingKey { case profileImage = "profile_image" }
     }
 
-    struct ProfileImage: Codable { let small: String }
+    struct ProfileImage: Codable {
+        let small: String
+        let medium: String
+        let large: String
+    }
 
     @discardableResult
     func fetchProfileImageURL(username: String) async throws -> String {
         let request = try await makeRequest(username: username)
         do {
             let result: UserResult = try await URLSession.shared.objectTask(for: request)
-            let url = result.profileImage.small
+            let url = result.profileImage.large
             self.avatarURL = url
             NotificationCenter.default
                 .post(
@@ -71,3 +74,4 @@ final class ProfileImageService {
         return request
     }
 }
+
