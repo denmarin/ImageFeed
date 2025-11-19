@@ -26,6 +26,7 @@ final class ProfileImageService {
     
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     private(set) var avatarURL: String?
+	private let tokenStorage = OAuth2TokenStorage.shared
     
     // Ответ API
     struct UserResult: Codable {
@@ -65,7 +66,7 @@ final class ProfileImageService {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
 
-        let token = await OAuth2TokenStorage.shared.get()
+        let token = await tokenStorage.get()
 
         if let token {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")

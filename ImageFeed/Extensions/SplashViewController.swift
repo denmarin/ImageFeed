@@ -8,7 +8,7 @@
 import UIKit
 
 final class SplashViewController: UIViewController {
-    private let storage = OAuth2TokenStorage.shared
+    private let tokenStorage = OAuth2TokenStorage.shared
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     private let profileService = ProfileService.shared
     
@@ -17,7 +17,7 @@ final class SplashViewController: UIViewController {
         
         Task { [weak self] in
             guard let self else { return }
-            let token = await self.storage.get()
+            let token = await tokenStorage.get()
             if let token {
                 await self.fetchProfile(token)
                 await self.switchToTabBarController()
@@ -77,7 +77,7 @@ extension SplashViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) async  {
         vc.dismiss(animated: true)
-        let token = await storage.get()
+        let token = await tokenStorage.get()
         if let token {
             await fetchProfile(token)
         }
