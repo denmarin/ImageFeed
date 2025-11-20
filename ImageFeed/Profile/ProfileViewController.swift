@@ -152,7 +152,6 @@ final class ProfileViewController: UIViewController {
         nameLabel?.text = name.isEmpty ? "No name" : name
         nicknameLabel?.text = login.isEmpty ? "@unknown" : login
         descriptionLabel?.text = bio.isEmpty ? "—" : bio
-        imageView.image = profile.profileImage
     }
     
     private func updateAvatar() {
@@ -160,7 +159,12 @@ final class ProfileViewController: UIViewController {
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let url = URL(string: profileImageURL)
         else { return }
-        imageView.kf.setImage(with: url)
+        let placeholder = UIImage(resource: .profilePic)
+        imageView.kf.setImage(
+            with: url,
+            placeholder: placeholder,
+            options: [.cacheOriginalImage]
+        )
     }
 }
 

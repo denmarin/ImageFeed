@@ -61,18 +61,6 @@
         }
       }
     },
-    "nMG-mL-kid.title" : {
-      "comment" : "Class = \"UIViewController\"; title = \"SplashView\"; ObjectID = \"nMG-mL-kid\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "SplashView"
-          }
-        }
-      }
-    },
     "SjK-nu-o5U.title" : {
       "comment" : "Class = \"UITabBarController\"; title = \"TabBar\"; ObjectID = \"SjK-nu-o5U\";",
       "extractionState" : "extracted_with_value",

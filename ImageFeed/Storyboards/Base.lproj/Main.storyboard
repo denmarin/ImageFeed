@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24412" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="nMG-mL-kid">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24412" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24405"/>
@@ -181,7 +181,7 @@
         <!--TabBar-->
         <scene sceneID="s3R-hY-drK">
             <objects>
-                <tabBarController storyboardIdentifier="TapBarViewController" title="TabBar" useStoryboardIdentifierAsRestorationIdentifier="YES" id="SjK-nu-o5U" customClass="TabBarController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="TabBarViewController" title="TabBar" useStoryboardIdentifierAsRestorationIdentifier="YES" id="SjK-nu-o5U" customClass="TabBarController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="YVv-ER-QcF"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="3dt-RE-wUg">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
@@ -196,7 +196,7 @@
         <!--Auth-->
         <scene sceneID="5ij-ce-d66">
             <objects>
-                <viewController title="Auth" id="wai-hq-sBv" customClass="AuthViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AuthViewController" title="Auth" useStoryboardIdentifierAsRestorationIdentifier="YES" id="wai-hq-sBv" customClass="AuthViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ar6-0R-SS4">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -248,13 +248,13 @@
         <!--WebView-->
         <scene sceneID="eSi-sa-93f">
             <objects>
-                <viewController title="WebView" id="xZW-qF-ELm" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="WebView" modalPresentationStyle="fullScreen" id="xZW-qF-ELm" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Bxr-hI-Wav">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fbC-ro-MXc">
-                                <rect key="frame" x="0.0" y="113" width="393" height="739"/>
+                                <rect key="frame" x="0.0" y="172" width="393" height="680"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -262,7 +262,7 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="1Gk-0u-xkb">
-                                <rect key="frame" x="0.0" y="113" width="393" height="4"/>
+                                <rect key="frame" x="0.0" y="172" width="393" height="4"/>
                                 <color key="progressTintColor" name="YPBlack"/>
                             </progressView>
                         </subviews>
@@ -290,35 +290,16 @@
             </objects>
             <point key="canvasLocation" x="-237.40458015267174" y="-882.3943661971831"/>
         </scene>
-        <!--SplashView-->
-        <scene sceneID="BEK-xE-t8U">
-            <objects>
-                <viewController title="SplashView" id="nMG-mL-kid" customClass="SplashViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="lmp-d4-zan">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="nWZ-km-gYT"/>
-                        <color key="backgroundColor" name="YPBlack"/>
-                    </view>
-                    <connections>
-                        <segue destination="A1I-oa-OSJ" kind="presentation" identifier="ShowAuthenticationScreen" modalPresentationStyle="fullScreen" id="dBg-m7-1Vp"/>
-                        <segue destination="SjK-nu-o5U" kind="show" identifier="ShowTapBar" id="9kc-32-2RK"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="9Ph-WD-Stk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-3370" y="-286"/>
-        </scene>
         <!--Navigation-->
         <scene sceneID="W91-Vq-H4d">
             <objects>
-                <navigationController title="Navigation" automaticallyAdjustsScrollViewInsets="NO" id="A1I-oa-OSJ" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="AuthNavigationController" title="Navigation" automaticallyAdjustsScrollViewInsets="NO" id="A1I-oa-OSJ" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="zZj-j3-eXn"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="yxo-mq-a4e">
-                        <rect key="frame" x="0.0" y="59" width="393" height="54"/>
+                        <rect key="frame" x="0.0" y="118" width="393" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
