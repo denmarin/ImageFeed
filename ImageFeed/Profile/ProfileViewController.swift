@@ -6,12 +6,15 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
+    private var profileImageServiceObserver: NSObjectProtocol?
     private var nameLabel: UILabel?
     private var nicknameLabel: UILabel?
     private var descriptionLabel: UILabel?
     private var imageView: UIImageView!
+    private let profileService = ProfileService.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,15 +24,45 @@ final class ProfileViewController: UIViewController {
         addNameLabel()
         addNicknameLabel()
         addDescriptionLabel()
+        
+        if let profile = profileService.profile {
+            self.updateProfileDetails(profile: profile)
+        }
+        
         addExitButton()
         
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        
+        NotificationCenter.default.addObserver(forName: ProfileService.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
+            guard let self = self, let profile = self.profileService.profile else { return }
+            self.updateProfileDetails(profile: profile)
+        }
+        
+        updateAvatar()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let profile = profileService.profile {
+            updateProfileDetails(profile: profile)
+        }
     }
     
     func addProfilePicture() {
-        let profileImage = UIImage(resource: .ekaterinaNovProfilePic)
-        let imageView = UIImageView(image: profileImage)
+        let imageView = UIImageView(image: UIImage(resource: .profilePic))
         self.imageView = imageView
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 35
         view.addSubview(imageView)
         NSLayoutConstraint.activate([
             imageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
@@ -43,12 +76,8 @@ final class ProfileViewController: UIViewController {
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.textColor = .ypWhite
-        
-        let text = "Екатерина Новикова"
-        nameLabel.text = text
         nameLabel.font = UIFont.systemFont(ofSize: 23, weight: .bold)
-        nameLabel.textColor = .ypWhite
-        
+        nameLabel.text = "No name"
         view.addSubview(nameLabel)
         NSLayoutConstraint.activate([
             nameLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -61,10 +90,8 @@ final class ProfileViewController: UIViewController {
         let nicknameLabel = UILabel()
         nicknameLabel.translatesAutoresizingMaskIntoConstraints = false
         nicknameLabel.textColor = .ypGray
-        
-        nicknameLabel.text = "@ekaterina_nov"
         nicknameLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        
+        nicknameLabel.text = "@unknown"
         view.addSubview(nicknameLabel)
         NSLayoutConstraint.activate([
             nicknameLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -77,10 +104,8 @@ final class ProfileViewController: UIViewController {
         let descriptionLabel = UILabel()
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.textColor = .ypWhite
-        
-        descriptionLabel.text = "Hello, world!"
         descriptionLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        
+        descriptionLabel.text = "—"
         view.addSubview(descriptionLabel)
         NSLayoutConstraint.activate([
             descriptionLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -116,6 +141,30 @@ final class ProfileViewController: UIViewController {
                 self.descriptionLabel = nil
             }
         }, for: .touchUpInside)
+    }
+    
+    private func updateProfileDetails(profile: ProfileService.Profile) {
+        print("[ProfileViewController] updateProfileDetails called with name=\(profile.name), login=\(profile.loginName)")
+        let name = profile.name
+        let login = profile.loginName
+        let bio = profile.bio
+
+        nameLabel?.text = name.isEmpty ? "No name" : name
+        nicknameLabel?.text = login.isEmpty ? "@unknown" : login
+        descriptionLabel?.text = bio.isEmpty ? "—" : bio
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        let placeholder = UIImage(resource: .profilePic)
+        imageView.kf.setImage(
+            with: url,
+            placeholder: placeholder,
+            options: [.cacheOriginalImage]
+        )
     }
 }
 

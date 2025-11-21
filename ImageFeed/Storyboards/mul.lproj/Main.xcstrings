@@ -26,13 +26,13 @@
       }
     },
     "cwA-0C-seG.title" : {
-      "comment" : "Class = \"UIViewController\"; title = \"Single Image\"; ObjectID = \"cwA-0C-seG\";",
+      "comment" : "Class = \"UIViewController\"; title = \"SingleImage\"; ObjectID = \"cwA-0C-seG\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Single Image"
+            "value" : "SingleImage"
           }
         }
       }
@@ -61,38 +61,14 @@
         }
       }
     },
-    "nMG-mL-kid.title" : {
-      "comment" : "Class = \"UIViewController\"; title = \"SplashView\"; ObjectID = \"nMG-mL-kid\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "SplashView"
-          }
-        }
-      }
-    },
     "SjK-nu-o5U.title" : {
-      "comment" : "Class = \"UITabBarController\"; title = \"Tab Bar\"; ObjectID = \"SjK-nu-o5U\";",
+      "comment" : "Class = \"UITabBarController\"; title = \"TabBar\"; ObjectID = \"SjK-nu-o5U\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Tab Bar"
-          }
-        }
-      }
-    },
-    "sp8-Oe-gfd.title" : {
-      "comment" : "Class = \"UIViewController\"; title = \"Profile\"; ObjectID = \"sp8-Oe-gfd\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Profile"
+            "value" : "TabBar"
           }
         }
       }
