@@ -5,7 +5,6 @@
 //  Created by Yury Semenyushkin on 11.11.25.
 //
 
-import Foundation
 import UIKit
 
 // MARK: - Answer from API

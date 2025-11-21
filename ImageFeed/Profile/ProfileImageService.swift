@@ -59,9 +59,14 @@ final class ProfileImageService {
     }
 
     private func makeRequest(username: String) async throws -> URLRequest {
-        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
-            throw ProfileImageError.invalidURL
-        }
+		guard !username.isEmpty else {
+			throw ProfileImageError.invalidURL
+		}
+		
+		guard let baseURL = Constants.GetUserURL else {
+			throw ProfileImageError.invalidURL
+		}
+		let url = baseURL.appendingPathComponent(username)
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
