@@ -57,6 +57,19 @@ final class ImagesListViewController: UIViewController {
 }
 
 extension ImagesListViewController: UITableViewDelegate {
+	
+	func tableView(
+	  _ tableView: UITableView,
+	  willDisplay cell: UITableViewCell,
+	  forRowAt indexPath: IndexPath
+	) {
+		/*
+		if indexPath.row + 1 == photos.count {
+			fetchPhotosNextPage()
+		}
+		*/
+	}
+	
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
     }

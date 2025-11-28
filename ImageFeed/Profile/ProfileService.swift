@@ -13,13 +13,6 @@ struct ProfileResult: Codable {
     var firstName: String?
     var lastName: String?
     var bio: String?
-    var profileImage: ProfileImage?
-
-    struct ProfileImage: Codable {
-        let small: String?
-        let medium: String?
-        let large: String?
-    }
 }
 
 final class ProfileService {
