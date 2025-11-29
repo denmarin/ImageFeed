@@ -37,11 +37,14 @@ final class ProfileViewController: UIViewController {
                 object: nil,
                 queue: .main
             ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
+                self?.updateAvatar()
             }
-        
-        NotificationCenter.default.addObserver(forName: ProfileService.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
+
+        NotificationCenter.default.addObserver(
+            forName: ProfileService.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
             guard let self = self, let profile = self.profileService.profile else { return }
             self.updateProfileDetails(profile: profile)
         }
@@ -165,6 +168,13 @@ final class ProfileViewController: UIViewController {
             placeholder: placeholder,
             options: [.cacheOriginalImage]
         )
+    }
+    
+    deinit {
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        NotificationCenter.default.removeObserver(self, name: ProfileService.didChangeNotification, object: nil)
     }
 }
 

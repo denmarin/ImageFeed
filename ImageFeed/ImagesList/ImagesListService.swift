@@ -29,10 +29,15 @@ struct PhotoResult: Codable {
 }
 
 class ImagesListService {
-	
-	static let shared = ImagesListService()
-	private init() {}
-	
+
+    private let session: URLSession
+    private let tokenStorage: OAuth2TokenStorage
+
+    init(session: URLSession = .shared, tokenStorage: OAuth2TokenStorage = .shared) {
+        self.session = session
+        self.tokenStorage = tokenStorage
+    }
+
 	struct Photo {
 		let id: String
 		let width: Int
@@ -79,7 +84,7 @@ class ImagesListService {
 
 			var request = URLRequest(url: url)
 			request.httpMethod = "GET"
-			if let token = await OAuth2TokenStorage.shared.token, !token.isEmpty {
+			if let token = await tokenStorage.token, !token.isEmpty {
 				  request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 			  } else {
 				  await MainActor.run { self.isLoading = false }
@@ -88,7 +93,7 @@ class ImagesListService {
 			  }
 
 			do {
-				let (data, response) = try await URLSession.shared.data(for: request)
+				let (data, response) = try await session.data(for: request)
 				guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
 					throw URLError(.badServerResponse)
 				}
@@ -140,4 +145,3 @@ class ImagesListService {
 	}
 
 }
-
