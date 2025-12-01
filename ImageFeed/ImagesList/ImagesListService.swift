@@ -7,27 +7,6 @@
 
 import Foundation
 
-struct PhotoResult: Codable {
-	let id: String?
-	let createdAt: Date?
-	let width: Int?
-	let height: Int?
-	let color: String?
-	let blurHash: String?
-	let likes: Int?
-	let likedByUser: Bool?
-	let description: String?
-	let urls: UrlsResult
-
-	struct UrlsResult: Codable {
-		let raw: String?
-		let full: String?
-		let regular: String?
-		let small: String?
-		let thumb: String?
-	}
-}
-
 class ImagesListService {
 
     private let session: URLSession
@@ -37,17 +16,6 @@ class ImagesListService {
         self.session = session
         self.tokenStorage = tokenStorage
     }
-
-	struct Photo {
-		let id: String
-		let width: Int
-		let height: Int
-		let createdAt: Date?
-		let welcomeDescription: String?
-		let thumbImageURL: String?
-		let largeImageURL: String?
-		let isLiked: Bool
-	}
 	
 	static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
 	
@@ -144,4 +112,36 @@ class ImagesListService {
 		}
 	}
 
+}
+
+struct PhotoResult: Codable {
+	let id: String?
+	let createdAt: Date?
+	let width: Int?
+	let height: Int?
+	let color: String?
+	let blurHash: String?
+	let likes: Int?
+	let likedByUser: Bool?
+	let description: String?
+	let urls: UrlsResult
+
+	struct UrlsResult: Codable {
+		let raw: String?
+		let full: String?
+		let regular: String?
+		let small: String?
+		let thumb: String?
+	}
+}
+
+struct Photo {
+	let id: String
+	let width: Int
+	let height: Int
+	let createdAt: Date?
+	let welcomeDescription: String?
+	let thumbImageURL: String?
+	let largeImageURL: String?
+	let isLiked: Bool
 }

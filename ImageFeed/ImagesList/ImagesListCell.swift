@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     
@@ -24,6 +25,7 @@ final class ImagesListCell: UITableViewCell {
         cellImage.image = nil
         dateLabel.text = nil
         likeButton.isSelected = false
+		cellImage.kf.cancelDownloadTask()
     }
     
     func configure(image: UIImage, dateText: String, isLiked: Bool) {

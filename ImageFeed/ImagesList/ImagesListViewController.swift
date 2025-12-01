@@ -37,6 +37,8 @@ final class ImagesListViewController: UIViewController {
         
         cell.configure(image: image, dateText: dateText, isLiked: isEven)
     }
+	
+	
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showSingleImageSegueIdentifier {

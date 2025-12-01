@@ -9,7 +9,6 @@ import UIKit
 import Kingfisher
 
 final class ProfileViewController: UIViewController {
-    private var profileImageServiceObserver: NSObjectProtocol?
     private var nameLabel: UILabel?
     private var nicknameLabel: UILabel?
     private var descriptionLabel: UILabel?
@@ -28,28 +27,25 @@ final class ProfileViewController: UIViewController {
         if let profile = profileService.profile {
             self.updateProfileDetails(profile: profile)
         }
-        
+
         addExitButton()
         
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                self?.updateAvatar()
-            }
-
-        NotificationCenter.default.addObserver(
-            forName: ProfileService.didChangeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            guard let self = self, let profile = self.profileService.profile else { return }
-            self.updateProfileDetails(profile: profile)
-        }
-        
         updateAvatar()
+        
+        Task { [weak self] in
+            guard let self else { return }
+            for await _ in NotificationCenter.default.notifications(named: ProfileImageService.didChangeNotification, object: nil) {
+                await MainActor.run { self.updateAvatar() }
+            }
+        }
+
+        Task { [weak self] in
+            guard let self else { return }
+            for await _ in NotificationCenter.default.notifications(named: ProfileService.didChangeNotification, object: nil) {
+                guard let profile = self.profileService.profile else { continue }
+                await MainActor.run { self.updateProfileDetails(profile: profile) }
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -171,10 +167,5 @@ final class ProfileViewController: UIViewController {
     }
     
     deinit {
-        if let observer = profileImageServiceObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
-        NotificationCenter.default.removeObserver(self, name: ProfileService.didChangeNotification, object: nil)
     }
 }
-
