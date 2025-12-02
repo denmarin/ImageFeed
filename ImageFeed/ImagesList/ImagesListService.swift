@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ImagesListService {
+final class ImagesListService {
 
     private let session: URLSession
     private let tokenStorage: OAuth2TokenStorage
@@ -79,9 +79,11 @@ class ImagesListService {
 					let height = item.height ?? 0
 
 					let thumb = item.urls.thumb ?? ""
+					let regular = item.urls.regular ?? ""
 					let large = item.urls.full ?? ""
 
 					let thumbImageURL = thumb
+					let regularImageURL = regular
 					let largeImageURL = large
 
 					let photo = Photo(
@@ -91,6 +93,7 @@ class ImagesListService {
 						createdAt: item.createdAt,
 						welcomeDescription: item.description,
 						thumbImageURL: thumbImageURL,
+						regularImageURL: regularImageURL,
 						largeImageURL: largeImageURL,
 						isLiked: item.likedByUser ?? false
 					)
@@ -142,6 +145,7 @@ struct Photo {
 	let createdAt: Date?
 	let welcomeDescription: String?
 	let thumbImageURL: String?
+	let regularImageURL: String?
 	let largeImageURL: String?
 	let isLiked: Bool
 }
