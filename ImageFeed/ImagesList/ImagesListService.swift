@@ -23,6 +23,44 @@ final class ImagesListService {
 	
 	private(set) var photos: [Photo] = []
 	private(set) var lastLoadedPage: Int = 0
+
+    @discardableResult
+    func changeLike(photoId: String, isLike: Bool) async throws -> Bool {
+        guard let url = URL(string: "https://api.unsplash.com/photos/\(photoId)/like") else {
+            throw ImagesListError.invalidURL
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = isLike ? "POST" : "DELETE"
+		
+        if let token = await tokenStorage.token, !token.isEmpty {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            throw ImagesListError.unauthorized
+        }
+
+        do {
+            let (data, response) = try await session.data(for: request)
+            guard let http = response as? HTTPURLResponse else { throw ImagesListError.nonHTTPResponse }
+            guard (200..<300).contains(http.statusCode) else {
+                let body = String(data: data, encoding: .utf8)
+                #if DEBUG
+                if let body { print("changeLike failed: status=\(http.statusCode) body=\(body)") }
+                #endif
+                throw ImagesListError.badStatus(code: http.statusCode, body: body)
+            }
+        } catch {
+            throw ImagesListError.transport(underlying: error)
+        }
+
+        await MainActor.run {
+            if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
+                self.photos[index].isLiked = isLike
+                NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self)
+            }
+        }
+        return isLike
+    }
+
 	
 	func fetchPhotosNextPage() {
 
@@ -30,7 +68,6 @@ final class ImagesListService {
 			guard let self = self else { return }
 
 			let nextPage = await MainActor.run { () -> Int? in
-				// Checking if the task is ongoing
 				if self.isLoading { return nil }
 				self.isLoading = true
 				return self.lastLoadedPage + 1
@@ -61,57 +98,63 @@ final class ImagesListService {
 			  }
 
 			do {
-				let (data, response) = try await session.data(for: request)
-				guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-					throw URLError(.badServerResponse)
-				}
+                let (data, response) = try await session.data(for: request)
+                guard let http = response as? HTTPURLResponse else {
+                    throw ImagesListError.nonHTTPResponse
+                }
+                guard (200..<300).contains(http.statusCode) else {
+                    let body = String(data: data, encoding: .utf8)
+                    #if DEBUG
+                    if let body { print("fetchPhotosNextPage failed: status=\(http.statusCode) body=\(body)") }
+                    #endif
+                    throw ImagesListError.badStatus(code: http.statusCode, body: body)
+                }
 
-				let decoder = JSONDecoder.snakeCase()
-				decoder.dateDecodingStrategy = .iso8601
+                let decoder = JSONDecoder.snakeCase()
+                decoder.dateDecodingStrategy = .iso8601
 
-				let results = try decoder.decode([PhotoResult].self, from: data)
+                let results = try decoder.decode([PhotoResult].self, from: data)
 
-				var mapped: [Photo] = []
-				mapped.reserveCapacity(results.count)
-				for item in results {
-					let id = item.id ?? ""
-					let width = item.width ?? 0
-					let height = item.height ?? 0
+                var mapped: [Photo] = []
+                mapped.reserveCapacity(results.count)
+                for item in results {
+                    let id = item.id ?? ""
+                    let width = item.width ?? 0
+                    let height = item.height ?? 0
 
-					let thumb = item.urls.thumb ?? ""
-					let regular = item.urls.regular ?? ""
-					let large = item.urls.full ?? ""
+                    let thumb = item.urls.thumb ?? ""
+                    let regular = item.urls.regular ?? ""
+                    let large = item.urls.full ?? ""
 
-					let thumbImageURL = thumb
-					let regularImageURL = regular
-					let largeImageURL = large
+                    let thumbImageURL = thumb
+                    let regularImageURL = regular
+                    let largeImageURL = large
 
-					let photo = Photo(
-						id: id,
-						width: width,
-						height: height,
-						createdAt: item.createdAt,
-						welcomeDescription: item.description,
-						thumbImageURL: thumbImageURL,
-						regularImageURL: regularImageURL,
-						largeImageURL: largeImageURL,
-						isLiked: item.likedByUser ?? false
-					)
-					mapped.append(photo)
-				}
+                    let photo = Photo(
+                        id: id,
+                        width: width,
+                        height: height,
+                        createdAt: item.createdAt,
+                        welcomeDescription: item.description,
+                        thumbImageURL: thumbImageURL,
+                        regularImageURL: regularImageURL,
+                        largeImageURL: largeImageURL,
+                        isLiked: item.likedByUser ?? false
+                    )
+                    mapped.append(photo)
+                }
 
-				await MainActor.run {
-					self.photos.append(contentsOf: mapped)
-					self.lastLoadedPage = nextPage
-					self.isLoading = false
-					NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self)
-				}
-			} catch {
-				await MainActor.run {
-					self.isLoading = false
-				}
-				print("fetchPhotosNextPage error:", error)
-			}
+                await MainActor.run {
+                    self.photos.append(contentsOf: mapped)
+                    self.lastLoadedPage = nextPage
+                    self.isLoading = false
+                    NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self)
+                }
+            } catch {
+                await MainActor.run { self.isLoading = false }
+                let err = (error as? ImagesListError) ?? .transport(underlying: error)
+                print("fetchPhotosNextPage error:", err.localizedDescription)
+            }
 		}
 	}
 
@@ -147,5 +190,28 @@ struct Photo {
 	let thumbImageURL: String?
 	let regularImageURL: String?
 	let largeImageURL: String?
-	let isLiked: Bool
+	var isLiked: Bool
+}
+
+enum ImagesListError: LocalizedError {
+	case invalidURL
+	case unauthorized
+	case nonHTTPResponse
+	case badStatus(code: Int, body: String?)
+	case transport(underlying: Error)
+
+	var errorDescription: String? {
+		switch self {
+		case .invalidURL:
+			return "Некорректный адрес запроса."
+		case .unauthorized:
+			return "Требуется авторизация."
+		case .nonHTTPResponse:
+			return "Некорректный ответ сервера."
+		case .badStatus(let code, _):
+			return "Сервер вернул статус \(code)."
+		case .transport(let underlying):
+			return "Ошибка сети: \(underlying.localizedDescription)"
+		}
+	}
 }
