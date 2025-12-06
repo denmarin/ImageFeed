@@ -8,6 +8,10 @@
 import UIKit
 import Kingfisher
 
+protocol ImagesListCellDelegate: AnyObject {
+    func imageListCellDidTapLike(_ cell: ImagesListCell)
+}
+
 final class ImagesListCell: UITableViewCell {
     
     @IBOutlet weak var cellImage: UIImageView!
@@ -15,9 +19,10 @@ final class ImagesListCell: UITableViewCell {
     @IBOutlet weak var dateLabel: UILabel!
     
     static let reuseIdentifier = "ImagesListCell"
+    weak var delegate: ImagesListCellDelegate?
     
     @IBAction private func likeTapped(_ sender: UIButton) {
-        sender.isSelected.toggle()
+        delegate?.imageListCellDidTapLike(self)
     }
     
     override func prepareForReuse() {

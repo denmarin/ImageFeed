@@ -47,6 +47,12 @@ final class ImagesListViewController: UIViewController {
     deinit {
         notificationsTask?.cancel()
     }
+    
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
 	
 	private func dateText(for date: Date?) -> String {
 	    date.map { dateFormatter.string(from: $0) } ?? ""
@@ -63,10 +69,11 @@ final class ImagesListViewController: UIViewController {
 
 	func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
 	    let photo = imagesListService.photos[indexPath.row]
+        cell.delegate = self
 
 	    cell.cellImage.kf.indicatorType = .activity
 	    let placeholder = UIImage(named: "imagesListPlaceholder")
-	    let isLiked = indexPath.row.isMultiple(of: 2)
+	    let isLiked = photo.isLiked
 	    let text = dateText(for: photo.createdAt)
 
 	    if let placeholder { cell.configure(image: placeholder, dateText: text, isLiked: isLiked) }
@@ -75,6 +82,7 @@ final class ImagesListViewController: UIViewController {
         guard let urlString = preferredURLString, let url = URL(string: urlString) else { return }
 
 	    cell.cellImage.kf.setImage(with: url, placeholder: placeholder) { _ in }
+        cell.likeButton.isSelected = photo.isLiked
 	}
 	
 	func updateTableViewAnimated() {
@@ -98,8 +106,14 @@ final class ImagesListViewController: UIViewController {
                 return
             }
             
-            let cell = tableView.cellForRow(at: indexPath) as? ImagesListCell
-            viewController.image = cell?.cellImage.image
+            let photo = imagesListService.photos[indexPath.row]
+            let preferredURLString = photo.largeImageURL ?? photo.regularImageURL ?? photo.thumbImageURL
+            if let urlString = preferredURLString, let url = URL(string: urlString) {
+                viewController.imageURL = url
+            } else {
+                let cell = tableView.cellForRow(at: indexPath) as? ImagesListCell
+                viewController.image = cell?.cellImage.image
+            }
         } else {
             super.prepare(for: segue, sender: sender)
         }
@@ -141,9 +155,41 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
+        imageListCell.delegate = self
         configCell(for: imageListCell, with: indexPath)
         return imageListCell
     }
     
     
+}
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let current = imagesListService.photos[indexPath.row]
+        let optimisticValue = !current.isLiked
+		
+        cell.likeButton.isEnabled = false
+        cell.likeButton.isSelected = optimisticValue
+
+        UIBlockingProgressHUD.show()
+
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                _ = try await imagesListService.changeLike(photoId: current.id, isLike: optimisticValue)
+                await MainActor.run {
+                    UIBlockingProgressHUD.dismiss()
+                    cell.likeButton.isEnabled = true
+                }
+            } catch {
+                await MainActor.run {
+                    UIBlockingProgressHUD.dismiss()
+                    cell.likeButton.isSelected = current.isLiked
+                    cell.likeButton.isEnabled = true
+                    self.showErrorAlert(message: (error as NSError).localizedDescription)
+                }
+            }
+        }
+    }
 }
