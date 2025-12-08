@@ -9,10 +9,12 @@ import Foundation
 
 final class ImagesListService {
 
+    static let shared = ImagesListService()
+	
     private let session: URLSession
     private let tokenStorage: OAuth2TokenStorage
 
-    init(session: URLSession = .shared, tokenStorage: OAuth2TokenStorage = .shared) {
+    private init(session: URLSession = .shared, tokenStorage: OAuth2TokenStorage = .shared) {
         self.session = session
         self.tokenStorage = tokenStorage
     }
@@ -158,6 +160,12 @@ final class ImagesListService {
 		}
 	}
 
+    func reset() {
+        photos.removeAll()
+        lastLoadedPage = 0
+        isLoading = false
+        NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self)
+    }
 }
 
 struct PhotoResult: Codable {

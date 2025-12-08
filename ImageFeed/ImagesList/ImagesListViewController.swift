@@ -14,7 +14,7 @@ final class ImagesListViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
 	
-	private let imagesListService = ImagesListService()
+	private var imagesListService = ImagesListService.shared
     private var notificationsTask: Task<Void, Never>?
     
     lazy var dateFormatter: DateFormatter = {
@@ -31,9 +31,8 @@ final class ImagesListViewController: UIViewController {
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
         
         // TODO: Temporary initial fetch to ensure first page loads if service doesn't auto-start
-        Task { [weak self] in
-            // If fetchPhotosNextPage is async, 'await' is fine; if not, it's still safe to call here
-            self?.imagesListService.fetchPhotosNextPage()
+		Task {
+            imagesListService.fetchPhotosNextPage()
         }
 
         notificationsTask = Task { [weak self] in
@@ -128,8 +127,8 @@ extension ImagesListViewController: UITableViewDelegate {
 	  forRowAt indexPath: IndexPath
 	) {
 		if indexPath.row + 1 == imagesListService.photos.count {
-			Task { [weak self] in
-				self?.imagesListService.fetchPhotosNextPage()
+			Task {
+				imagesListService.fetchPhotosNextPage()
 			}
 		}
 	}
@@ -193,3 +192,4 @@ extension ImagesListViewController: ImagesListCellDelegate {
         }
     }
 }
+

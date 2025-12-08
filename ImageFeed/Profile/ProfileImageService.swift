@@ -79,5 +79,9 @@ final class ProfileImageService {
 
         return request
     }
+    
+    func reset() {
+        avatarURL = nil
+        NotificationCenter.default.post(name: ProfileImageService.didChangeNotification, object: self)
+    }
 }
-

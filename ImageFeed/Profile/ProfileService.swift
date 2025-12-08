@@ -75,5 +75,9 @@ final class ProfileService {
             throw error
         }
     }
+    
+    func reset() {
+        profile = nil
+        NotificationCenter.default.post(name: ProfileService.didChangeNotification, object: self)
+    }
 }
-

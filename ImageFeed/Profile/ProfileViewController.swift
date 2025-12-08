@@ -13,7 +13,8 @@ final class ProfileViewController: UIViewController {
     private var nicknameLabel: UILabel?
     private var descriptionLabel: UILabel?
     private var imageView: UIImageView!
-    private let profileService = ProfileService.shared
+    private var profileService = ProfileService.shared
+    private var profileImageService = ProfileImageService.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -125,19 +126,9 @@ final class ProfileViewController: UIViewController {
             button.heightAnchor.constraint(equalToConstant: 44)
         ])
         
-        button.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            if let label = self.nameLabel {
-                label.removeFromSuperview()
-                self.nameLabel = nil
-            }
-            if let label = self.nicknameLabel {
-                label.removeFromSuperview()
-                self.nicknameLabel = nil
-            }
-            if let label = self.descriptionLabel {
-                label.removeFromSuperview()
-                self.descriptionLabel = nil
+        button.addAction(UIAction { _ in
+            Task {
+                await ProfileLogoutService.shared.logout()
             }
         }, for: .touchUpInside)
     }
@@ -155,7 +146,7 @@ final class ProfileViewController: UIViewController {
     
     private func updateAvatar() {
         guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let profileImageURL = profileImageService.avatarURL,
             let url = URL(string: profileImageURL)
         else { return }
         let placeholder = UIImage(resource: .profilePic)
@@ -169,3 +160,4 @@ final class ProfileViewController: UIViewController {
     deinit {
     }
 }
+
