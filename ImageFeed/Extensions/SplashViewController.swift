@@ -16,7 +16,8 @@ final class SplashViewController: UIViewController {
 	}()
     
     private let tokenStorage = OAuth2TokenStorage.shared
-    private let profileService = ProfileService.shared
+    private var profileService = ProfileService.shared
+    private var profileImageService = ProfileImageService.shared
 	
     
     override func viewDidLoad() {
@@ -85,7 +86,7 @@ final class SplashViewController: UIViewController {
         do {
             let profile = try await profileService.fetchProfile(token)
             Task {
-                try? await ProfileImageService.shared.fetchProfileImageURL(username: profile.username)
+                try? await profileImageService.fetchProfileImageURL(username: profile.username)
             }
         } catch {
             print("Failed to fetch profile: \(error)")

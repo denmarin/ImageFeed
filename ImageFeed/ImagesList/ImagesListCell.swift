@@ -6,6 +6,11 @@
 //
 
 import UIKit
+import Kingfisher
+
+protocol ImagesListCellDelegate: AnyObject {
+    func imageListCellDidTapLike(_ cell: ImagesListCell)
+}
 
 final class ImagesListCell: UITableViewCell {
     
@@ -14,9 +19,10 @@ final class ImagesListCell: UITableViewCell {
     @IBOutlet weak var dateLabel: UILabel!
     
     static let reuseIdentifier = "ImagesListCell"
+    weak var delegate: ImagesListCellDelegate?
     
     @IBAction private func likeTapped(_ sender: UIButton) {
-        sender.isSelected.toggle()
+        delegate?.imageListCellDidTapLike(self)
     }
     
     override func prepareForReuse() {
@@ -24,6 +30,7 @@ final class ImagesListCell: UITableViewCell {
         cellImage.image = nil
         dateLabel.text = nil
         likeButton.isSelected = false
+		cellImage.kf.cancelDownloadTask()
     }
     
     func configure(image: UIImage, dateText: String, isLiked: Bool) {

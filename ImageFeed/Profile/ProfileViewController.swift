@@ -9,12 +9,12 @@ import UIKit
 import Kingfisher
 
 final class ProfileViewController: UIViewController {
-    private var profileImageServiceObserver: NSObjectProtocol?
     private var nameLabel: UILabel?
     private var nicknameLabel: UILabel?
     private var descriptionLabel: UILabel?
     private var imageView: UIImageView!
-    private let profileService = ProfileService.shared
+    private var profileService = ProfileService.shared
+    private var profileImageService = ProfileImageService.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,25 +28,25 @@ final class ProfileViewController: UIViewController {
         if let profile = profileService.profile {
             self.updateProfileDetails(profile: profile)
         }
-        
+
         addExitButton()
         
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        
-        NotificationCenter.default.addObserver(forName: ProfileService.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
-            guard let self = self, let profile = self.profileService.profile else { return }
-            self.updateProfileDetails(profile: profile)
-        }
-        
         updateAvatar()
+        
+        Task { [weak self] in
+            guard let self else { return }
+            for await _ in NotificationCenter.default.notifications(named: ProfileImageService.didChangeNotification, object: nil) {
+                await MainActor.run { self.updateAvatar() }
+            }
+        }
+
+        Task { [weak self] in
+            guard let self else { return }
+            for await _ in NotificationCenter.default.notifications(named: ProfileService.didChangeNotification, object: nil) {
+                guard let profile = self.profileService.profile else { continue }
+                await MainActor.run { self.updateProfileDetails(profile: profile) }
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -126,19 +126,9 @@ final class ProfileViewController: UIViewController {
             button.heightAnchor.constraint(equalToConstant: 44)
         ])
         
-        button.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            if let label = self.nameLabel {
-                label.removeFromSuperview()
-                self.nameLabel = nil
-            }
-            if let label = self.nicknameLabel {
-                label.removeFromSuperview()
-                self.nicknameLabel = nil
-            }
-            if let label = self.descriptionLabel {
-                label.removeFromSuperview()
-                self.descriptionLabel = nil
+        button.addAction(UIAction { _ in
+            Task {
+                await ProfileLogoutService.shared.logout()
             }
         }, for: .touchUpInside)
     }
@@ -156,7 +146,7 @@ final class ProfileViewController: UIViewController {
     
     private func updateAvatar() {
         guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let profileImageURL = profileImageService.avatarURL,
             let url = URL(string: profileImageURL)
         else { return }
         let placeholder = UIImage(resource: .profilePic)
@@ -165,6 +155,9 @@ final class ProfileViewController: UIViewController {
             placeholder: placeholder,
             options: [.cacheOriginalImage]
         )
+    }
+    
+    deinit {
     }
 }
 
