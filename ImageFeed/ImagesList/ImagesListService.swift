@@ -22,6 +22,8 @@ final class ImagesListService {
 	static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
 	
 	private var isLoading: Bool = false
+    private var didReachEnd: Bool = false
+    private let perPage: Int = 10
 	
 	private(set) var photos: [Photo] = []
 	private(set) var lastLoadedPage: Int = 0
@@ -71,6 +73,7 @@ final class ImagesListService {
 
 			let nextPage = await MainActor.run { () -> Int? in
 				if self.isLoading { return nil }
+                if self.didReachEnd { return nil }
 				self.isLoading = true
 				return self.lastLoadedPage + 1
 			}
@@ -82,7 +85,7 @@ final class ImagesListService {
 			}
 			components.queryItems = [
 				URLQueryItem(name: "page", value: String(nextPage)),
-				URLQueryItem(name: "per_page", value: "10")
+				URLQueryItem(name: "per_page", value: String(self.perPage))
 			]
 			guard let url = components.url else {
 				await MainActor.run { self.isLoading = false }
@@ -116,6 +119,10 @@ final class ImagesListService {
                 decoder.dateDecodingStrategy = .iso8601
 
                 let results = try decoder.decode([PhotoResult].self, from: data)
+
+                if results.count < self.perPage {
+                    await MainActor.run { self.didReachEnd = true }
+                }
 
                 var mapped: [Photo] = []
                 mapped.reserveCapacity(results.count)
@@ -164,6 +171,7 @@ final class ImagesListService {
         photos.removeAll()
         lastLoadedPage = 0
         isLoading = false
+        didReachEnd = false
         NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self)
     }
 }
@@ -223,3 +231,4 @@ enum ImagesListError: LocalizedError {
 		}
 	}
 }
+
