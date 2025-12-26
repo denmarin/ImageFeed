@@ -85,6 +85,8 @@ final class ImagesListViewController: UIViewController {
 	}
 	
 	func updateTableViewAnimated() {
+		guard isViewLoaded, view.window != nil else { return }
+		
 		let oldCount = tableView.numberOfRows(inSection: 0)
 		let newCount = imagesListService.photos.count
 		guard newCount > oldCount else { return }
