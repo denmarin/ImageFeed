@@ -63,9 +63,7 @@ final class ProfileImageService {
 			throw ProfileImageError.invalidURL
 		}
 		
-		guard let baseURL = Constants.GetUserURL else {
-			throw ProfileImageError.invalidURL
-		}
+		let baseURL = Constants.getUserURL
 		let url = baseURL.appendingPathComponent(username)
 
         var request = URLRequest(url: url)
