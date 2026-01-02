@@ -26,7 +26,7 @@ final class AuthHelper: AuthHelperProtocol {
 	}
 
 	func authURL() -> URL? {
-		guard var urlComponents = URLComponents(string: configuration.unsplashAuthorizeURL) else {
+		guard var urlComponents = URLComponents(url: configuration.unsplashAuthorizeURL, resolvingAgainstBaseURL: false) else {
 			return nil
 		}
 		
@@ -52,3 +52,4 @@ final class AuthHelper: AuthHelperProtocol {
 		}
 	}
 }
+

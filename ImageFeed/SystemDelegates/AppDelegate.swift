@@ -15,9 +15,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-		ProgressHUD.animationType = .activityIndicator
-		ProgressHUD.colorHUD = (UIColor(resource: .ypWhite))
-		ProgressHUD.colorAnimation = (UIColor(resource: .ypBlack))
+#if TESTING
+  print("TESTING flag is ON")
+  #else
+  print("TESTING flag is OFF")
+#endif
+
+#if DEBUG
+        if NSClassFromString("XCTestCase") == nil {
+            ProgressHUD.animationType = .activityIndicator
+            ProgressHUD.colorHUD = (UIColor(resource: .ypWhite))
+            ProgressHUD.colorAnimation = (UIColor(resource: .ypBlack))
+        }
+#else
+        ProgressHUD.animationType = .activityIndicator
+        ProgressHUD.colorHUD = (UIColor(resource: .ypWhite))
+        ProgressHUD.colorAnimation = (UIColor(resource: .ypBlack))
+#endif
         return true
     }
 

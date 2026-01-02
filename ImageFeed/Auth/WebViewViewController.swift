@@ -56,6 +56,20 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
 	func setProgressHidden(_ isHidden: Bool) {
 		progressView.isHidden = isHidden
 	}
+    
+    deinit {
+        // Ensure observers and delegates are released to avoid crashes during teardown
+        estimatedProgressObservation = nil
+        webView?.navigationDelegate = nil
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // Stop any ongoing loads and release delegates/observers to avoid callbacks after teardown
+        webView?.stopLoading()
+        webView?.navigationDelegate = nil
+        estimatedProgressObservation = nil
+    }
 }
 
 extension WebViewViewController: WKNavigationDelegate {
