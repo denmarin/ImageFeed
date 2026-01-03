@@ -15,12 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-#if TESTING
-  print("TESTING flag is ON")
-  #else
-  print("TESTING flag is OFF")
-#endif
-
 #if DEBUG
         if NSClassFromString("XCTestCase") == nil {
             ProgressHUD.animationType = .activityIndicator

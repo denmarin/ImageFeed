@@ -8,55 +8,69 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+// MARK: - Protocols
+protocol ProfileViewProtocol: AnyObject {
+    func show(name: String, login: String, bio: String)
+    func setAvatar(url: URL?)
+}
+
+protocol ProfilePresenterProtocol: AnyObject {
+    var view: ProfileViewProtocol? { get set }
+    func viewDidLoad()
+    func viewWillAppear()
+    func didTapLogout() async
+}
+
+// MARK: - View Controller
+final class ProfileViewController: UIViewController, ProfileViewProtocol {
     private var nameLabel: UILabel?
     private var nicknameLabel: UILabel?
     private var descriptionLabel: UILabel?
     private var imageView: UIImageView!
-    private var profileService = ProfileService.shared
-    private var profileImageService = ProfileImageService.shared
-    
+
+    private var presenter: ProfilePresenterProtocol?
+
+    func configure(_ presenter: ProfilePresenterProtocol) {
+        self.presenter = presenter
+        presenter.view = self
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
-        
+
         addProfilePicture()
         addNameLabel()
         addNicknameLabel()
         addDescriptionLabel()
-        
-        if let profile = profileService.profile {
-            self.updateProfileDetails(profile: profile)
-        }
-
         addExitButton()
-        
-        updateAvatar()
-        
-        Task { [weak self] in
-            guard let self else { return }
-            for await _ in NotificationCenter.default.notifications(named: ProfileImageService.didChangeNotification, object: nil) {
-                await MainActor.run { self.updateAvatar() }
-            }
-        }
 
-        Task { [weak self] in
-            guard let self else { return }
-            for await _ in NotificationCenter.default.notifications(named: ProfileService.didChangeNotification, object: nil) {
-                guard let profile = self.profileService.profile else { continue }
-                await MainActor.run { self.updateProfileDetails(profile: profile) }
-            }
-        }
+        presenter?.viewDidLoad()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let profile = profileService.profile {
-            updateProfileDetails(profile: profile)
+        presenter?.viewWillAppear()
+    }
+
+    // MARK: - ProfileViewProtocol
+    func show(name: String, login: String, bio: String) {
+        nameLabel?.text = name.isEmpty ? "No name" : name
+        nicknameLabel?.text = login.isEmpty ? "@unknown" : login
+        descriptionLabel?.text = bio.isEmpty ? "—" : bio
+    }
+
+    func setAvatar(url: URL?) {
+        let placeholder = UIImage(resource: .profilePic)
+        if let url {
+            imageView.kf.setImage(with: url, placeholder: placeholder, options: [.cacheOriginalImage])
+        } else {
+            imageView.image = placeholder
         }
     }
-    
-    func addProfilePicture() {
+
+    // MARK: - UI
+    private func addProfilePicture() {
         let imageView = UIImageView(image: UIImage(resource: .profilePic))
         self.imageView = imageView
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -71,8 +85,8 @@ final class ProfileViewController: UIViewController {
             imageView.heightAnchor.constraint(equalToConstant: 70)
         ])
     }
-    
-    func addNameLabel () {
+
+    private func addNameLabel () {
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.textColor = .ypWhite
@@ -85,8 +99,8 @@ final class ProfileViewController: UIViewController {
         ])
         self.nameLabel = nameLabel
     }
-    
-    func addNicknameLabel() {
+
+    private func addNicknameLabel() {
         let nicknameLabel = UILabel()
         nicknameLabel.translatesAutoresizingMaskIntoConstraints = false
         nicknameLabel.textColor = .ypGray
@@ -99,8 +113,8 @@ final class ProfileViewController: UIViewController {
         ])
         self.nicknameLabel = nicknameLabel
     }
-    
-    func addDescriptionLabel() {
+
+    private func addDescriptionLabel() {
         let descriptionLabel = UILabel()
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.textColor = .ypWhite
@@ -113,8 +127,8 @@ final class ProfileViewController: UIViewController {
         ])
         self.descriptionLabel = descriptionLabel
     }
-    
-    func addExitButton () {
+
+    private func addExitButton () {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "Exit"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -125,39 +139,11 @@ final class ProfileViewController: UIViewController {
             button.widthAnchor.constraint(equalToConstant: 44),
             button.heightAnchor.constraint(equalToConstant: 44)
         ])
-        
-        button.addAction(UIAction { _ in
-            Task {
-                await ProfileLogoutService.shared.logout()
-            }
-        }, for: .touchUpInside)
-    }
-    
-    private func updateProfileDetails(profile: ProfileService.Profile) {
-        print("[ProfileViewController] updateProfileDetails called with name=\(profile.name), login=\(profile.loginName)")
-        let name = profile.name
-        let login = profile.loginName
-        let bio = profile.bio
 
-        nameLabel?.text = name.isEmpty ? "No name" : name
-        nicknameLabel?.text = login.isEmpty ? "@unknown" : login
-        descriptionLabel?.text = bio.isEmpty ? "—" : bio
-    }
-    
-    private func updateAvatar() {
-        guard
-            let profileImageURL = profileImageService.avatarURL,
-            let url = URL(string: profileImageURL)
-        else { return }
-        let placeholder = UIImage(resource: .profilePic)
-        imageView.kf.setImage(
-            with: url,
-            placeholder: placeholder,
-            options: [.cacheOriginalImage]
-        )
-    }
-    
-    deinit {
+        button.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            Task { await self.presenter?.didTapLogout() }
+        }, for: .touchUpInside)
     }
 }
 

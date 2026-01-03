@@ -79,13 +79,12 @@ final class ImagesListService {
 			}
 			guard let nextPage else { return }
 			
-			guard var components = URLComponents(string: "https://api.unsplash.com/photos") else {
+			guard var components = URLComponents(string: "https://api.unsplash.com/photos/random") else {
 				await MainActor.run { self.isLoading = false }
 				return
 			}
 			components.queryItems = [
-				URLQueryItem(name: "page", value: String(nextPage)),
-				URLQueryItem(name: "per_page", value: String(self.perPage))
+				URLQueryItem(name: "count", value: String(self.perPage))
 			]
 			guard let url = components.url else {
 				await MainActor.run { self.isLoading = false }
@@ -119,10 +118,6 @@ final class ImagesListService {
                 decoder.dateDecodingStrategy = .iso8601
 
                 let results = try decoder.decode([PhotoResult].self, from: data)
-
-                if results.count < self.perPage {
-                    await MainActor.run { self.didReachEnd = true }
-                }
 
                 var mapped: [Photo] = []
                 mapped.reserveCapacity(results.count)
