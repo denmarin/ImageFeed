@@ -45,13 +45,21 @@ final class ImagesListViewController: UIViewController, ImagesListViewProtocol {
 
     // MARK: - ImagesListViewProtocol
 	func reloadRows(from oldCount: Int, to newCount: Int) {
-		guard isViewLoaded else { return }
-		guard newCount > oldCount else { return }
+        guard isViewLoaded else { return }
+        guard newCount > oldCount else { return }
 
-		let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: 0) }
-		tableView.performBatchUpdates {
-			tableView.insertRows(at: indexPaths, with: .automatic)
-		}
+        let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: 0) }
+
+        // Ensure data source count matches expected oldCount; otherwise, fall back to full reload
+        let currentRows = tableView.numberOfSections > 0 ? tableView.numberOfRows(inSection: 0) : 0
+        guard currentRows == oldCount else {
+            tableView.reloadData()
+            return
+        }
+
+        tableView.performBatchUpdates {
+            tableView.insertRows(at: indexPaths, with: .automatic)
+        }
 	}
 
     func setLikeEnabled(_ enabled: Bool, at indexPath: IndexPath) {

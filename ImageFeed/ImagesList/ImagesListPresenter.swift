@@ -23,12 +23,14 @@ protocol ImagesListPresenterProtocol: AnyObject {
 final class ImagesListPresenter: ImagesListPresenterProtocol {
     weak var view: ImagesListViewProtocol?
 
-    private let imagesListService: ImagesListService
+    private let imagesListService: ImagesListServiceProtocol
+    private let hud: ProgressHUDProviding
     private var notificationsTask: Task<Void, Never>?
     private let helper = ImagesListHelper()
 
-    init(imagesListService: ImagesListService = .shared) {
+    init(imagesListService: ImagesListServiceProtocol = ImagesListService.shared, hud: ProgressHUDProviding = LiveProgressHUD()) {
         self.imagesListService = imagesListService
+        self.hud = hud
     }
 
     var numberOfRows: Int { imagesListService.photos.count }
@@ -36,7 +38,9 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
 
 	func viewDidLoad() {
 		lastPhotosCount = imagesListService.photos.count
-		bindNotifications()
+		if !RuntimeEnvironment.isUnitTesting {
+			bindNotifications()
+		}
 		imagesListService.fetchPhotosNextPage()
 	}
 
@@ -46,7 +50,9 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         }
     }
 
+    @MainActor
     func configureCell(_ cell: ImagesListCell, at indexPath: IndexPath) {
+        guard imagesListService.photos.indices.contains(indexPath.row) else { return }
         let photo = imagesListService.photos[indexPath.row]
         cell.delegate = nil // delegate set by VC
         cell.cellImage.kf.indicatorType = .activity
@@ -62,34 +68,35 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
 
     func cellHeight(for tableView: UITableView, at indexPath: IndexPath) -> CGFloat {
+        guard imagesListService.photos.indices.contains(indexPath.row) else { return tableView.rowHeight }
         let photo = imagesListService.photos[indexPath.row]
         return helper.cellHeight(for: tableView, photo: photo)
     }
 
     func didTapLike(at indexPath: IndexPath) {
+        guard imagesListService.photos.indices.contains(indexPath.row) else { return }
+        let row = indexPath.row
+        let section = indexPath.section
         let current = imagesListService.photos[indexPath.row]
         let optimisticValue = !current.isLiked
-        view?.setLikeEnabled(false, at: indexPath)
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             guard let self else { return }
-            UIBlockingProgressHUD.show()
+            self.view?.setLikeEnabled(false, at: IndexPath(row: row, section: section))
+            self.hud.show()
             do {
-                _ = try await imagesListService.changeLike(photoId: current.id, isLike: optimisticValue)
-                await MainActor.run {
-                    UIBlockingProgressHUD.dismiss()
-                    self.view?.setLikeEnabled(true, at: indexPath)
-                }
+                _ = try await self.imagesListService.changeLike(photoId: current.id, isLike: optimisticValue)
+                self.hud.dismiss()
+                self.view?.setLikeEnabled(true, at: IndexPath(row: row, section: section))
             } catch {
-                await MainActor.run {
-                    UIBlockingProgressHUD.dismiss()
-                    self.view?.setLikeEnabled(true, at: indexPath)
-                    self.view?.showError(message: (error as NSError).localizedDescription)
-                }
+                self.hud.dismiss()
+                self.view?.setLikeEnabled(true, at: IndexPath(row: row, section: section))
+                self.view?.showError(message: (error as NSError).localizedDescription)
             }
         }
     }
 
     func imageURLForDetails(at indexPath: IndexPath) -> URL? {
+        guard imagesListService.photos.indices.contains(indexPath.row) else { return nil }
         let photo = imagesListService.photos[indexPath.row]
         let preferredURLString = photo.largeImageURL ?? photo.regularImageURL ?? photo.thumbImageURL
         if let urlString = preferredURLString, let url = URL(string: urlString) {

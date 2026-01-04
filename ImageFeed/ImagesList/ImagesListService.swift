@@ -7,7 +7,13 @@
 
 import Foundation
 
-final class ImagesListService {
+protocol ImagesListServiceProtocol: AnyObject {
+	var photos: [Photo] { get }
+	func fetchPhotosNextPage()
+	func changeLike(photoId: String, isLike: Bool) async throws -> Bool
+}
+
+final class ImagesListService: ImagesListServiceProtocol {
 
     static let shared = ImagesListService()
 	

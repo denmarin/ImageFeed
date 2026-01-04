@@ -11,15 +11,15 @@ import UIKit
 final class ProfilePresenter: ProfilePresenterProtocol {
     weak var view: ProfileViewProtocol?
 
-    private let profileService: ProfileService
-    private let profileImageService: ProfileImageService
-    private let logoutService: ProfileLogoutService
+    private let profileService: ProfileServiceProtocol
+    private let profileImageService: ProfileImageServiceProtocol
+    private let logoutService: ProfileLogoutServiceProtocol
     private var notificationsTask: Task<Void, Never>?
 
     init(
-        profileService: ProfileService = .shared,
-        profileImageService: ProfileImageService = .shared,
-        logoutService: ProfileLogoutService = .shared
+        profileService: ProfileServiceProtocol = ProfileService.shared,
+        profileImageService: ProfileImageServiceProtocol = ProfileImageService.shared,
+        logoutService: ProfileLogoutServiceProtocol = ProfileLogoutService.shared
     ) {
         self.profileService = profileService
         self.profileImageService = profileImageService
@@ -27,7 +27,9 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     }
 
     func viewDidLoad() {
-        bindNotifications()
+        if !RuntimeEnvironment.isUnitTesting {
+            bindNotifications()
+        }
         updateProfile()
         updateAvatar()
     }

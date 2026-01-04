@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol ProfileServiceProtocol: AnyObject {
+	var profile: ProfileService.Profile? { get }
+}
+
 // MARK: - Answer from API
 struct ProfileResult: Codable {
     var username: String?
@@ -15,7 +19,7 @@ struct ProfileResult: Codable {
     var bio: String?
 }
 
-final class ProfileService {
+final class ProfileService: ProfileServiceProtocol {
     static let shared = ProfileService()
     static let didChangeNotification = Notification.Name("ProfileServiceDidChange")
     
