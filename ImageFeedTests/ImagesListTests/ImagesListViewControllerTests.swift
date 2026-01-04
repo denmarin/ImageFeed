@@ -5,13 +5,12 @@ import UIKit
 @MainActor
 final class ImagesListViewControllerTests: XCTestCase {
 
+    private var retainedTableView: UITableView?
+
     private func makeVC() -> ImagesListViewController {
         let vc = ImagesListViewController(nibName: nil, bundle: nil)
-        // Load view hierarchy so we can safely add subviews
-        vc.loadViewIfNeeded()
         let tableView = UITableView()
-        tableView.frame = CGRect(x: 0, y: 0, width: 320, height: 480)
-        vc.view.addSubview(tableView)
+        self.retainedTableView = tableView // keep strong reference so weak IBOutlet doesn't nil out
         vc.tableView = tableView
         return vc
     }

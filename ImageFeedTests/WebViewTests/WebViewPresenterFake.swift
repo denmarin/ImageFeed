@@ -1,3 +1,11 @@
+//
+//  WebViewPresenterSpy.swift
+//  ImageFeed
+//
+//  Created by Yury Semenyushkin on 02.01.26.
+//
+
+
 @testable import ImageFeed
 import Foundation
 
