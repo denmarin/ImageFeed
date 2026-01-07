@@ -3,13 +3,12 @@
 //  ImageFeed
 //
 //  Created by Yury Semenyushkin on 01.01.26.
-//
 
 import Foundation
 
 protocol AuthHelperProtocol {
-	func authRequest() -> URLRequest?
-	func code(from url: URL) -> String?
+    func authRequest() -> URLRequest?
+    func code(from url: URL) -> String?
 }
 
 final class AuthHelper: AuthHelperProtocol {
@@ -18,38 +17,37 @@ final class AuthHelper: AuthHelperProtocol {
     init(configuration: AuthConfiguration = .standard) {
         self.configuration = configuration
     }
-	
-	func authRequest() -> URLRequest? {
-		guard let url = authURL() else { return nil }
-		
-		return URLRequest(url: url)
-	}
+    
+    func authRequest() -> URLRequest? {
+        guard let url = authURL() else { return nil }
+        return URLRequest(url: url)
+    }
 
-	func authURL() -> URL? {
-		guard var urlComponents = URLComponents(url: configuration.unsplashAuthorizeURL, resolvingAgainstBaseURL: false) else {
-			return nil
-		}
-		
-		urlComponents.queryItems = [
-			URLQueryItem(name: "client_id", value: configuration.accessKey),
-			URLQueryItem(name: "redirect_uri", value: configuration.redirectURI),
-			URLQueryItem(name: "response_type", value: "code"),
-			URLQueryItem(name: "scope", value: configuration.accessScope)
-		]
-		
-		return urlComponents.url
-	}
-	
-	func code(from url: URL) -> String? {
-		if let urlComponents = URLComponents(string: url.absoluteString),
-		   urlComponents.path == "/oauth/authorize/native",
-		   let items = urlComponents.queryItems,
-		   let codeItem = items.first(where: { $0.name == "code" })
-		{
-			return codeItem.value
-		} else {
-			return nil
-		}
-	}
+    func authURL() -> URL? {
+        guard var urlComponents = URLComponents(url: configuration.unsplashAuthorizeURL, resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+        
+        urlComponents.queryItems = [
+            URLQueryItem(name: "client_id", value: configuration.accessKey),
+            URLQueryItem(name: "redirect_uri", value: configuration.redirectURI),
+            URLQueryItem(name: "response_type", value: "code"),
+            URLQueryItem(name: "scope", value: configuration.accessScope)
+        ]
+        
+        return urlComponents.url
+    }
+    
+    func code(from url: URL) -> String? {
+        if let urlComponents = URLComponents(string: url.absoluteString),
+           urlComponents.path == "/oauth/authorize/native",
+           let items = urlComponents.queryItems,
+           let codeItem = items.first(where: { $0.name == "code" })
+        {
+            return codeItem.value
+        } else {
+            return nil
+        }
+    }
 }
 

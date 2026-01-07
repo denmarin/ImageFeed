@@ -3,7 +3,6 @@
 //  ImageFeed
 //
 //  Created by Yury Semenyushkin on 03.01.26.
-//
 
 import UIKit
 import Foundation
@@ -34,15 +33,15 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
 
     var numberOfRows: Int { imagesListService.photos.count }
-	private var lastPhotosCount = 0
+    private var lastPhotosCount = 0
 
-	func viewDidLoad() {
-		lastPhotosCount = imagesListService.photos.count
-		if !RuntimeEnvironment.isUnitTesting {
-			bindNotifications()
-		}
-		imagesListService.fetchPhotosNextPage()
-	}
+    func viewDidLoad() {
+        lastPhotosCount = imagesListService.photos.count
+        if !RuntimeEnvironment.isUnitTesting {
+            bindNotifications()
+        }
+        imagesListService.fetchPhotosNextPage()
+    }
 
     func willDisplayCell(at indexPath: IndexPath) {
         if indexPath.row + 1 == imagesListService.photos.count {
@@ -54,7 +53,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     func configureCell(_ cell: ImagesListCell, at indexPath: IndexPath) {
         guard imagesListService.photos.indices.contains(indexPath.row) else { return }
         let photo = imagesListService.photos[indexPath.row]
-        cell.delegate = nil // delegate set by VC
+        cell.delegate = nil
         cell.cellImage.kf.indicatorType = .activity
         let placeholder = UIImage(named: "imagesListPlaceholder")
         let isLiked = photo.isLiked
@@ -105,22 +104,22 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         return nil
     }
 
-	private func bindNotifications() {
-		notificationsTask?.cancel()
-		notificationsTask = Task { [weak self] in
-			guard let self else { return }
+    private func bindNotifications() {
+        notificationsTask?.cancel()
+        notificationsTask = Task { [weak self] in
+            guard let self else { return }
 
-			for await _ in NotificationCenter.default.notifications(named: ImagesListService.didChangeNotification) {
-				let newCount = self.imagesListService.photos.count
-				let oldCount = self.lastPhotosCount
-				self.lastPhotosCount = newCount
+            for await _ in NotificationCenter.default.notifications(named: ImagesListService.didChangeNotification) {
+                let newCount = self.imagesListService.photos.count
+                let oldCount = self.lastPhotosCount
+                self.lastPhotosCount = newCount
 
-				await MainActor.run {
-					self.view?.reloadRows(from: oldCount, to: newCount)
-				}
-			}
-		}
-	}
+                await MainActor.run {
+                    self.view?.reloadRows(from: oldCount, to: newCount)
+                }
+            }
+        }
+    }
 
     deinit {
         notificationsTask?.cancel()

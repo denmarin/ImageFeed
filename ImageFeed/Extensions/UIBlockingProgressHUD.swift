@@ -19,7 +19,7 @@ final class UIBlockingProgressHUD {
     
     static func show() {
         if RuntimeEnvironment.isUnitTesting { return }
-        Task { @MainActor in
+        Task(priority: .userInitiated) { @MainActor in
             window?.isUserInteractionEnabled = false
             ProgressHUD.animate()
         }
@@ -27,7 +27,7 @@ final class UIBlockingProgressHUD {
     
     static func dismiss() {
         if RuntimeEnvironment.isUnitTesting { return }
-        Task { @MainActor in
+        Task(priority: .userInitiated) { @MainActor in
             window?.isUserInteractionEnabled = true
             ProgressHUD.dismiss()
         }

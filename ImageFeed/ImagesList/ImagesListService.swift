@@ -3,20 +3,19 @@
 //  ImageFeed
 //
 //  Created by Yury Semenyushkin on 28.11.25.
-//
 
 import Foundation
 
 protocol ImagesListServiceProtocol: AnyObject {
-	var photos: [Photo] { get }
-	func fetchPhotosNextPage()
-	func changeLike(photoId: String, isLike: Bool) async throws -> Bool
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage()
+    func changeLike(photoId: String, isLike: Bool) async throws -> Bool
 }
 
 final class ImagesListService: ImagesListServiceProtocol {
 
     static let shared = ImagesListService()
-	
+    
     private let session: URLSession
     private let tokenStorage: OAuth2TokenStorage
 
@@ -24,15 +23,15 @@ final class ImagesListService: ImagesListServiceProtocol {
         self.session = session
         self.tokenStorage = tokenStorage
     }
-	
-	static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
-	
-	private var isLoading: Bool = false
+    
+    static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
+    
+    private var isLoading: Bool = false
     private var didReachEnd: Bool = false
     private let perPage: Int = 10
-	
-	private(set) var photos: [Photo] = []
-	private(set) var lastLoadedPage: Int = 0
+    
+    private(set) var photos: [Photo] = []
+    private(set) var lastLoadedPage: Int = 0
 
     @discardableResult
     func changeLike(photoId: String, isLike: Bool) async throws -> Bool {
@@ -41,7 +40,7 @@ final class ImagesListService: ImagesListServiceProtocol {
         }
         var request = URLRequest(url: url)
         request.httpMethod = isLike ? "POST" : "DELETE"
-		
+        
         if let token = await tokenStorage.token, !token.isEmpty {
             request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         } else {
@@ -71,43 +70,43 @@ final class ImagesListService: ImagesListServiceProtocol {
         return isLike
     }
 
-	
-	func fetchPhotosNextPage() {
+    
+    func fetchPhotosNextPage() {
 
-		Task { [weak self] in
-			guard let self = self else { return }
+        Task { [weak self] in
+            guard let self = self else { return }
 
-			let nextPage = await MainActor.run { () -> Int? in
-				if self.isLoading { return nil }
+            let nextPage = await MainActor.run { () -> Int? in
+                if self.isLoading { return nil }
                 if self.didReachEnd { return nil }
-				self.isLoading = true
-				return self.lastLoadedPage + 1
-			}
-			guard let nextPage else { return }
-			
-			guard var components = URLComponents(string: "https://api.unsplash.com/photos/random") else {
-				await MainActor.run { self.isLoading = false }
-				return
-			}
-			components.queryItems = [
-				URLQueryItem(name: "count", value: String(self.perPage))
-			]
-			guard let url = components.url else {
-				await MainActor.run { self.isLoading = false }
-				return
-			}
+                self.isLoading = true
+                return self.lastLoadedPage + 1
+            }
+            guard let nextPage else { return }
+            
+            guard var components = URLComponents(string: "https://api.unsplash.com/photos/random") else {
+                await MainActor.run { self.isLoading = false }
+                return
+            }
+            components.queryItems = [
+                URLQueryItem(name: "count", value: String(self.perPage))
+            ]
+            guard let url = components.url else {
+                await MainActor.run { self.isLoading = false }
+                return
+            }
 
-			var request = URLRequest(url: url)
-			request.httpMethod = "GET"
-			if let token = await tokenStorage.token, !token.isEmpty {
-				  request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-			  } else {
-				  await MainActor.run { self.isLoading = false }
-				  print("No auth token available")
-				  return
-			  }
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            if let token = await tokenStorage.token, !token.isEmpty {
+                  request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+              } else {
+                  await MainActor.run { self.isLoading = false }
+                  print("No auth token available")
+                  return
+              }
 
-			do {
+            do {
                 let (data, response) = try await session.data(for: request)
                 guard let http = response as? HTTPURLResponse else {
                     throw ImagesListError.nonHTTPResponse
@@ -165,8 +164,8 @@ final class ImagesListService: ImagesListServiceProtocol {
                 let err = (error as? ImagesListError) ?? .transport(underlying: error)
                 print("fetchPhotosNextPage error:", err.localizedDescription)
             }
-		}
-	}
+        }
+    }
 
     func reset() {
         photos.removeAll()
@@ -178,58 +177,58 @@ final class ImagesListService: ImagesListServiceProtocol {
 }
 
 struct PhotoResult: Codable {
-	let id: String?
-	let createdAt: Date?
-	let width: Int?
-	let height: Int?
-	let color: String?
-	let blurHash: String?
-	let likes: Int?
-	let likedByUser: Bool?
-	let description: String?
-	let urls: UrlsResult
+    let id: String?
+    let createdAt: Date?
+    let width: Int?
+    let height: Int?
+    let color: String?
+    let blurHash: String?
+    let likes: Int?
+    let likedByUser: Bool?
+    let description: String?
+    let urls: UrlsResult
 
-	struct UrlsResult: Codable {
-		let raw: String?
-		let full: String?
-		let regular: String?
-		let small: String?
-		let thumb: String?
-	}
+    struct UrlsResult: Codable {
+        let raw: String?
+        let full: String?
+        let regular: String?
+        let small: String?
+        let thumb: String?
+    }
 }
 
 struct Photo {
-	let id: String
-	let width: Int
-	let height: Int
-	let createdAt: Date?
-	let welcomeDescription: String?
-	let thumbImageURL: String?
-	let regularImageURL: String?
-	let largeImageURL: String?
-	var isLiked: Bool
+    let id: String
+    let width: Int
+    let height: Int
+    let createdAt: Date?
+    let welcomeDescription: String?
+    let thumbImageURL: String?
+    let regularImageURL: String?
+    let largeImageURL: String?
+    var isLiked: Bool
 }
 
 enum ImagesListError: LocalizedError {
-	case invalidURL
-	case unauthorized
-	case nonHTTPResponse
-	case badStatus(code: Int, body: String?)
-	case transport(underlying: Error)
+    case invalidURL
+    case unauthorized
+    case nonHTTPResponse
+    case badStatus(code: Int, body: String?)
+    case transport(underlying: Error)
 
-	var errorDescription: String? {
-		switch self {
-		case .invalidURL:
-			return "Некорректный адрес запроса."
-		case .unauthorized:
-			return "Требуется авторизация."
-		case .nonHTTPResponse:
-			return "Некорректный ответ сервера."
-		case .badStatus(let code, _):
-			return "Сервер вернул статус \(code)."
-		case .transport(let underlying):
-			return "Ошибка сети: \(underlying.localizedDescription)"
-		}
-	}
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "Некорректный адрес запроса."
+        case .unauthorized:
+            return "Требуется авторизация."
+        case .nonHTTPResponse:
+            return "Некорректный ответ сервера."
+        case .badStatus(let code, _):
+            return "Сервер вернул статус \(code)."
+        case .transport(let underlying):
+            return "Ошибка сети: \(underlying.localizedDescription)"
+        }
+    }
 }
 

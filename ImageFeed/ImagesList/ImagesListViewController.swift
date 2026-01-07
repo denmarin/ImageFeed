@@ -50,7 +50,6 @@ final class ImagesListViewController: UIViewController, ImagesListViewProtocol {
 
         let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: 0) }
 
-        // Ensure data source count matches expected oldCount; otherwise, fall back to full reload
         let currentRows = tableView.numberOfSections > 0 ? tableView.numberOfRows(inSection: 0) : 0
         guard currentRows == oldCount else {
             tableView.reloadData()

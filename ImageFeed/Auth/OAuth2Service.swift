@@ -3,7 +3,6 @@
 //  ImageFeed
 //
 //  Created by Yury Semenyushkin on 03.11.25.
-//
 
 import Foundation
 
@@ -67,7 +66,6 @@ actor OAuth2Service {
             URLQueryItem(name: "code", value: code),
             URLQueryItem(name: "grant_type", value: "authorization_code"),
         ]
-        
         
         var components = URLComponents()
         components.queryItems = items

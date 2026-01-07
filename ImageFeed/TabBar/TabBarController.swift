@@ -18,11 +18,16 @@ final class TabBarController: UITabBarController {
         }
         let imagesPresenter = ImagesListPresenter()
         imagesListVC.configure(imagesPresenter)
+        imagesListVC.tabBarItem.accessibilityLabel = "feedTab"
         // Profile
         let profileVC = ProfileViewController()
         let profilePresenter = ProfilePresenter()
         profileVC.configure(profilePresenter)
-        profileVC.tabBarItem = UITabBarItem(title: "", image: UIImage(resource: .tabProfileActive), selectedImage: nil)
+        let profileItem = UITabBarItem(title: nil, image: UIImage(resource: .tabProfileActive), selectedImage: nil)
+        profileItem.accessibilityIdentifier = "profileTab"
+        profileItem.accessibilityLabel = "profileTab"
+        profileItem.imageInsets = UIEdgeInsets(top: 6, left: 0, bottom: -6, right: 0)
+        profileVC.tabBarItem = profileItem
 
         self.viewControllers = [imagesListVC, profileVC]
     }

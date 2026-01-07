@@ -44,7 +44,7 @@ final class ProfilePresenter: ProfilePresenterProtocol {
 
     private func bindNotifications() {
         notificationsTask?.cancel()
-        notificationsTask = Task { [weak self] in
+        notificationsTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
             for await _ in NotificationCenter.default.notifications(named: ProfileImageService.didChangeNotification, object: nil) {
                 await MainActor.run { self.updateAvatar() }

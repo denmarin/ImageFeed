@@ -92,6 +92,7 @@ final class ProfileViewController: UIViewController, ProfileViewProtocol {
         nameLabel.textColor = .ypWhite
         nameLabel.font = UIFont.systemFont(ofSize: 23, weight: .bold)
         nameLabel.text = "No name"
+        nameLabel.accessibilityIdentifier = "profileNameLabel"
         view.addSubview(nameLabel)
         NSLayoutConstraint.activate([
             nameLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -106,6 +107,7 @@ final class ProfileViewController: UIViewController, ProfileViewProtocol {
         nicknameLabel.textColor = .ypGray
         nicknameLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         nicknameLabel.text = "@unknown"
+        nicknameLabel.accessibilityIdentifier = "profileUsernameLabel"
         view.addSubview(nicknameLabel)
         NSLayoutConstraint.activate([
             nicknameLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -120,6 +122,7 @@ final class ProfileViewController: UIViewController, ProfileViewProtocol {
         descriptionLabel.textColor = .ypWhite
         descriptionLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         descriptionLabel.text = "—"
+        descriptionLabel.accessibilityIdentifier = "profileBioLabel"
         view.addSubview(descriptionLabel)
         NSLayoutConstraint.activate([
             descriptionLabel.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
@@ -131,6 +134,7 @@ final class ProfileViewController: UIViewController, ProfileViewProtocol {
     private func addExitButton () {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "Exit"), for: .normal)
+        button.accessibilityIdentifier = "profileLogoutButton"
         button.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(button)
         NSLayoutConstraint.activate([
@@ -142,7 +146,23 @@ final class ProfileViewController: UIViewController, ProfileViewProtocol {
 
         button.addAction(UIAction { [weak self] _ in
             guard let self else { return }
-            Task { await self.presenter?.didTapLogout() }
+            let alert = UIAlertController(title: "Пока, пока!", message: "Уверены, что хотите выйти?", preferredStyle: .alert)
+            alert.view.accessibilityIdentifier = "logoutAlert"
+
+            let yes = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+                guard let self else { return }
+                Task { await self.presenter?.didTapLogout() }
+            }
+            yes.setValue("logoutAlertYesButton", forKey: "accessibilityIdentifier")
+            yes.setValue(UIColor.systemBlue, forKey: "titleTextColor")
+
+            let no = UIAlertAction(title: "Нет", style: .default)
+            no.setValue("logoutAlertNoButton", forKey: "accessibilityIdentifier")
+            no.setValue(UIColor.systemBlue, forKey: "titleTextColor")
+
+            alert.addAction(yes)
+            alert.addAction(no)
+            self.present(alert, animated: true)
         }, for: .touchUpInside)
     }
 }

@@ -20,7 +20,9 @@ final class ProfileLogoutService: ProfileLogoutServiceProtocol {
     func logout() async {
         cleanCookies()
 
-        await OAuth2TokenStorage.shared.set(nil)
+        Task.detached(priority: .utility) {
+            await OAuth2TokenStorage.shared.set(nil)
+        }
 
         ProfileService.shared.reset()
         ProfileImageService.shared.reset()

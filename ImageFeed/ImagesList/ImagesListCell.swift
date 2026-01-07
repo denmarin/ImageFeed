@@ -18,6 +18,11 @@ final class ImagesListCell: UITableViewCell {
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var dateLabel: UILabel!
     
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        likeButton.accessibilityIdentifier = "likeButton"
+    }
+    
     static let reuseIdentifier = "ImagesListCell"
     weak var delegate: ImagesListCellDelegate?
     
@@ -42,3 +47,4 @@ final class ImagesListCell: UITableViewCell {
         cellImage.layer.masksToBounds = true
     }
 }
+
