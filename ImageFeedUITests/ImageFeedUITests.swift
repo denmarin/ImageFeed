@@ -10,8 +10,11 @@ final class Image_FeedUITests: XCTestCase {
 	private let app = XCUIApplication()
 	
 	override func setUpWithError() throws {
-		continueAfterFailure = false
-		app.launch()
+        continueAfterFailure = false
+        // Limit pages to 1 for UI tests to avoid excessive pagination
+        app.launchArguments.append("UITESTING")
+        app.launchEnvironment["UITESTS_MAX_PAGES"] = "1"
+        app.launch()
 	}
 	
 	func testAuth() throws {
@@ -22,18 +25,22 @@ final class Image_FeedUITests: XCTestCase {
 		XCTAssertTrue(webView.waitForExistence(timeout: 5))
 
 		let loginTextField = webView.descendants(matching: .textField).element
-		XCTAssertTrue(loginTextField.waitForExistence(timeout: 5))
+		XCTAssertTrue(loginTextField.waitForExistence(timeout: 10))
 		
 		loginTextField.tap()
-		loginTextField.typeText("<email>")
-		webView.swipeUp()
+		sleep(5)
+		loginTextField.typeText("Danya6846084@gmail.com")
+		sleep(3)
+		if app.toolbars.buttons["Done"].exists {app.toolbars.buttons["Done"].tap()}
 		
 		let passwordTextField = webView.descendants(matching: .secureTextField).element
 		XCTAssertTrue(passwordTextField.waitForExistence(timeout: 5))
 		
 		passwordTextField.tap()
-		passwordTextField.typeText("<password>")
-		webView.swipeUp()
+		sleep(5)
+		passwordTextField.typeText("3yyhN816HP6Y3fq")
+		sleep(3)
+		if app.toolbars.buttons["Done"].exists {app.toolbars.buttons["Done"].tap()}
 		
 		webView.buttons["Login"].tap()
 		
@@ -71,8 +78,9 @@ final class Image_FeedUITests: XCTestCase {
 	}
 
 	func testProfile() throws {
-		sleep(3)
-		app.tabBars.buttons.element(boundBy: 1).tap()
+		let element = app.tabBars.buttons.element(boundBy: 1)
+		XCTAssertTrue(element.waitForExistence(timeout: 5))
+		element.tap()
 	   
 		XCTAssertTrue(app.staticTexts["profileNameLabel"].exists)
 		XCTAssertTrue(app.staticTexts["profileUsernameLabel"].exists)
@@ -86,4 +94,5 @@ final class Image_FeedUITests: XCTestCase {
 		yesButton.tap()
 	}
 }
+
 

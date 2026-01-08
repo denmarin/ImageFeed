@@ -79,6 +79,11 @@ final class ImagesListService: ImagesListServiceProtocol {
             let nextPage = await MainActor.run { () -> Int? in
                 if self.isLoading { return nil }
                 if self.didReachEnd { return nil }
+                // Respect UI Tests page limit if provided
+                if let maxPages = RuntimeEnvironment.uiTestsMaxPages, self.lastLoadedPage >= maxPages {
+                    self.didReachEnd = true
+                    return nil
+                }
                 self.isLoading = true
                 return self.lastLoadedPage + 1
             }
@@ -156,6 +161,10 @@ final class ImagesListService: ImagesListServiceProtocol {
                 await MainActor.run {
                     self.photos.append(contentsOf: mapped)
                     self.lastLoadedPage = nextPage
+                    // If we have a UI tests page limit and reached it, stop further loading
+                    if let maxPages = RuntimeEnvironment.uiTestsMaxPages, self.lastLoadedPage >= maxPages {
+                        self.didReachEnd = true
+                    }
                     self.isLoading = false
                     NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self)
                 }
