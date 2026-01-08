@@ -29,7 +29,7 @@ final class Image_FeedUITests: XCTestCase {
 		
 		loginTextField.tap()
 		sleep(5)
-		loginTextField.typeText("Danya6846084@gmail.com")
+		loginTextField.typeText("<email>")
 		sleep(3)
 		if app.toolbars.buttons["Done"].exists {app.toolbars.buttons["Done"].tap()}
 		
@@ -38,7 +38,7 @@ final class Image_FeedUITests: XCTestCase {
 		
 		passwordTextField.tap()
 		sleep(5)
-		passwordTextField.typeText("3yyhN816HP6Y3fq")
+		passwordTextField.typeText("<password>")
 		sleep(3)
 		if app.toolbars.buttons["Done"].exists {app.toolbars.buttons["Done"].tap()}
 		
