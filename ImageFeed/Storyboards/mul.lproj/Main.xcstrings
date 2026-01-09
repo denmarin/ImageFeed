@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "6Eo-5r-zEO.accessibilityLabel" : {
+      "comment" : "Class = \"UIButton\"; accessibilityLabel = \"navBackButton\"; ObjectID = \"6Eo-5r-zEO\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "navBackButton"
+          }
+        }
+      }
+    },
     "A1I-oa-OSJ.title" : {
       "comment" : "Class = \"UINavigationController\"; title = \"Navigation\"; ObjectID = \"A1I-oa-OSJ\";",
       "extractionState" : "extracted_with_value",
@@ -9,6 +21,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Navigation"
+          }
+        }
+      }
+    },
+    "Bxr-hI-Wav.accessibilityLabel" : {
+      "comment" : "Class = \"UIView\"; accessibilityLabel = \"WebViewViewController\"; ObjectID = \"Bxr-hI-Wav\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "WebViewViewController"
           }
         }
       }
@@ -93,6 +117,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "WebView"
+          }
+        }
+      }
+    },
+    "zY4-v8-OSA.accessibilityLabel" : {
+      "comment" : "Class = \"UIButton\"; accessibilityLabel = \"likeButton\"; ObjectID = \"zY4-v8-OSA\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "likeButton"
           }
         }
       }

@@ -9,14 +9,20 @@
 import Foundation
 import WebKit
 
-final class ProfileLogoutService {
+protocol ProfileLogoutServiceProtocol: AnyObject {
+	func logout() async
+}
+
+final class ProfileLogoutService: ProfileLogoutServiceProtocol {
     static let shared = ProfileLogoutService()
     private init() { }
 
     func logout() async {
         cleanCookies()
 
-        await OAuth2TokenStorage.shared.set(nil)
+        Task.detached(priority: .utility) {
+            await OAuth2TokenStorage.shared.set(nil)
+        }
 
         ProfileService.shared.reset()
         ProfileImageService.shared.reset()

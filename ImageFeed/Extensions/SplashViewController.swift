@@ -3,7 +3,6 @@
 //  ImageFeed
 //
 //  Created by Yury Semenyushkin on 05.11.25.
-//
 
 import UIKit
 
@@ -13,12 +12,12 @@ final class SplashViewController: UIViewController {
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
         return iv
-	}()
+    }()
     
     private let tokenStorage = OAuth2TokenStorage.shared
     private var profileService = ProfileService.shared
     private var profileImageService = ProfileImageService.shared
-	
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,31 +38,31 @@ final class SplashViewController: UIViewController {
         
         Task { [weak self] in
             guard let self else { return }
-            let token = await tokenStorage.get()
+            let token = await self.tokenStorage.get()
             if let token {
                 await self.fetchProfile(token)
                 await self.switchToTabBarController()
-			} else {
-				await presentAuthViewController()
-			}
-		}
-	}
-	
-	private func presentAuthViewController() async {
-	    let storyboard = UIStoryboard(name: "Main", bundle: .main)
-	    guard let nav = storyboard.instantiateViewController(withIdentifier: "AuthNavigationController") as? UINavigationController else {
-	        assertionFailure("Не удалось найти AuthNavigationController по идентификатору")
-	        return
-	    }
-	    if let authVC = nav.viewControllers.first as? AuthViewController {
-	        authVC.delegate = self
-	    }
-	    nav.modalPresentationStyle = .fullScreen
-	    await MainActor.run {
-	        present(nav, animated: true)
-	    }
-	}
-	
+            } else {
+                await self.presentAuthViewController()
+            }
+        }
+    }
+    
+    private func presentAuthViewController() async {
+        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+        guard let nav = storyboard.instantiateViewController(withIdentifier: "AuthNavigationController") as? UINavigationController else {
+            assertionFailure("Не удалось найти AuthNavigationController по идентификатору")
+            return
+        }
+        if let authVC = nav.viewControllers.first as? AuthViewController {
+            authVC.delegate = self
+        }
+        nav.modalPresentationStyle = .fullScreen
+        await MainActor.run {
+            self.present(nav, animated: true)
+        }
+    }
+    
     private func switchToTabBarController() async {
         await MainActor.run {
             guard
@@ -85,8 +84,8 @@ final class SplashViewController: UIViewController {
     private func fetchProfile(_ token: String) async {
         do {
             let profile = try await profileService.fetchProfile(token)
-            Task {
-                try? await profileImageService.fetchProfileImageURL(username: profile.username)
+            Task(priority: .userInitiated) { [weak self] in
+                try? await self?.profileImageService.fetchProfileImageURL(username: profile.username)
             }
         } catch {
             print("Failed to fetch profile: \(error)")
@@ -94,18 +93,17 @@ final class SplashViewController: UIViewController {
     }
 }
 
-extension SplashViewController {
-	
-}
-
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) async  {
-        vc.dismiss(animated: true)
-        let token = await tokenStorage.get()
-        if let token {
-            await fetchProfile(token)
+        Task { [weak self, weak vc] in
+            vc?.dismiss(animated: true)
+            guard let self else { return }
+            let token = await self.tokenStorage.get()
+            if let token {
+                await self.fetchProfile(token)
+            }
+            await self.switchToTabBarController()
         }
-        await switchToTabBarController()
     }
 }
 

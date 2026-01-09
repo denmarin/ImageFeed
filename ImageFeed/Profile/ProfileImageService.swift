@@ -19,7 +19,11 @@ private enum ProfileImageError: LocalizedError {
     }
 }
 
-final class ProfileImageService {
+protocol ProfileImageServiceProtocol: AnyObject {
+	var avatarURL: String? { get }
+}
+
+final class ProfileImageService: ProfileImageServiceProtocol {
     
     static let shared = ProfileImageService()
     private init() {}
@@ -63,9 +67,7 @@ final class ProfileImageService {
 			throw ProfileImageError.invalidURL
 		}
 		
-		guard let baseURL = Constants.GetUserURL else {
-			throw ProfileImageError.invalidURL
-		}
+		let baseURL = Constants.getUserURL
 		let url = baseURL.appendingPathComponent(username)
 
         var request = URLRequest(url: url)

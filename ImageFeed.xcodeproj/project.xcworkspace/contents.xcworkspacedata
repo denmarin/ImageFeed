@@ -4,4 +4,16 @@
    <FileRef
       location = "self:">
    </FileRef>
+   <FileRef
+      location = "group:.swift">
+   </FileRef>
+   <FileRef
+      location = "group:ProfileHelper.swift">
+   </FileRef>
+   <FileRef
+      location = "group:ImagesListPresenter.swift">
+   </FileRef>
+   <FileRef
+      location = "group:ImagesListHelper.swift">
+   </FileRef>
 </Workspace>

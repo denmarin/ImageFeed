@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol ProfileServiceProtocol: AnyObject {
+	var profile: ProfileService.Profile? { get }
+}
+
 // MARK: - Answer from API
 struct ProfileResult: Codable {
     var username: String?
@@ -15,7 +19,7 @@ struct ProfileResult: Codable {
     var bio: String?
 }
 
-final class ProfileService {
+final class ProfileService: ProfileServiceProtocol {
     static let shared = ProfileService()
     static let didChangeNotification = Notification.Name("ProfileServiceDidChange")
     
@@ -43,7 +47,7 @@ final class ProfileService {
     }
 
     private func makeProfileRequest(token: String) throws -> URLRequest {
-        guard let url = URL(string: "https://api.unsplash.com/me") else { throw ProfileServiceError.invalidURL }
+		let url = Constants.getMeURL
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
