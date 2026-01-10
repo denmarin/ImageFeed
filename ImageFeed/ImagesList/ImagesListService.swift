@@ -185,59 +185,8 @@ final class ImagesListService: ImagesListServiceProtocol {
     }
 }
 
-struct PhotoResult: Codable {
-    let id: String?
-    let createdAt: Date?
-    let width: Int?
-    let height: Int?
-    let color: String?
-    let blurHash: String?
-    let likes: Int?
-    let likedByUser: Bool?
-    let description: String?
-    let urls: UrlsResult
 
-    struct UrlsResult: Codable {
-        let raw: String?
-        let full: String?
-        let regular: String?
-        let small: String?
-        let thumb: String?
-    }
-}
 
-struct Photo {
-    let id: String
-    let width: Int
-    let height: Int
-    let createdAt: Date?
-    let welcomeDescription: String?
-    let thumbImageURL: String?
-    let regularImageURL: String?
-    let largeImageURL: String?
-    var isLiked: Bool
-}
 
-enum ImagesListError: LocalizedError {
-    case invalidURL
-    case unauthorized
-    case nonHTTPResponse
-    case badStatus(code: Int, body: String?)
-    case transport(underlying: Error)
 
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL:
-            return "Некорректный адрес запроса."
-        case .unauthorized:
-            return "Требуется авторизация."
-        case .nonHTTPResponse:
-            return "Некорректный ответ сервера."
-        case .badStatus(let code, _):
-            return "Сервер вернул статус \(code)."
-        case .transport(let underlying):
-            return "Ошибка сети: \(underlying.localizedDescription)"
-        }
-    }
-}
 

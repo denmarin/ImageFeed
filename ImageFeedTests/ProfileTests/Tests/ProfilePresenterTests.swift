@@ -6,6 +6,7 @@ import UIKit
 final class ProfilePresenterTests: XCTestCase {
 
     func testViewDidLoadShowsProfileAndAvatar() {
+        // Given
         let profileService = ProfileServiceFake()
         profileService.profile = ProfileService.Profile(username: "john", firstName: "John", lastName: "Appleseed", bio: "About", profileImage: UIImage())
         let imageService = ProfileImageServiceFake()
@@ -15,7 +16,9 @@ final class ProfilePresenterTests: XCTestCase {
         let presenter = ProfilePresenter(profileService: profileService, profileImageService: imageService, logoutService: logoutService)
         let view = ProfileViewSpy()
         presenter.view = view
+        // When
         presenter.viewDidLoad()
+        // Then
         XCTAssertEqual(view.shown?.name, "John Appleseed")
         XCTAssertEqual(view.shown?.login, "@john")
         XCTAssertEqual(view.shown?.bio, "About")
@@ -23,11 +26,14 @@ final class ProfilePresenterTests: XCTestCase {
     }
 
     func testDidTapLogoutCallsService() async {
+        // Given
         let profileService = ProfileServiceFake()
         let imageService = ProfileImageServiceFake()
         let logoutService = ProfileLogoutServiceFake()
         let presenter = ProfilePresenter(profileService: profileService, profileImageService: imageService, logoutService: logoutService)
+        // When
         await presenter.didTapLogout()
+        // Then
         XCTAssertTrue(logoutService.logoutCalled)
     }
 

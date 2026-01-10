@@ -5,29 +5,29 @@ import XCTest
 final class ProfileViewControllerTests: XCTestCase {
 
     func testViewControllerCallsPresenterViewDidLoad() {
-        // given
+        // Given
         let vc = ProfileViewController()
         let presenter = ProfilePresenterSpy()
         vc.configure(presenter)
 
-        // when
+        // When
         vc.loadViewIfNeeded()
 
-        // then
+        // Then
         XCTAssertTrue(presenter.viewDidLoadCalled)
     }
 
     func testViewControllerCallsPresenterViewWillAppear() {
-        // given
+        // Given
         let vc = ProfileViewController()
         let presenter = ProfilePresenterSpy()
         vc.configure(presenter)
         vc.loadViewIfNeeded()
 
-        // when
+        // When
         vc.viewWillAppear(false)
 
-        // then
+        // Then
         XCTAssertTrue(presenter.viewWillAppearCalled)
     }
 }
